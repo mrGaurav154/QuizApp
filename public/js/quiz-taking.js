@@ -165,6 +165,7 @@ function startQuiz() {
     document.getElementById('questionScreen').classList.remove('hidden');
     
     isQuizActive = true;
+    window.isQuizActive = true; // Keep proctor.js in sync
     setupSecurityListeners();
 
     // Start background music
@@ -294,6 +295,7 @@ async function submitQuiz(autoSubmitted = false) {
     if (isSubmitting) return;
     isSubmitting = true;
     isQuizActive = false;
+    window.isQuizActive = false; // Keep proctor.js in sync
     clearInterval(timerInterval);
     
     // Stop background music
@@ -423,6 +425,7 @@ function triggerWarning(title, message) {
     if (!isQuizActive) return;
     
     isQuizActive = false; // Pause timer and listeners temporarily
+    window.isQuizActive = false; // Keep proctor.js in sync
     warningCount++;
 
     if (warningCount >= MAX_WARNINGS) {
@@ -433,7 +436,8 @@ function triggerWarning(title, message) {
 }
 
 // Expose these to proctor.js
-window.isQuizActive = isQuizActive;
+// NOTE: window.isQuizActive is kept in sync manually at each state change above
+window.isQuizActive = false; // initial state
 window.triggerWarning = triggerWarning;
 window.startQuiz = startQuiz;
 
@@ -469,6 +473,7 @@ function showWarningModal(title, message, count) {
     document.getElementById('acknowledgeWarningBtn').addEventListener('click', () => {
         modal.remove();
         isQuizActive = true;
+        window.isQuizActive = true; // Keep proctor.js in sync — quiz is resuming
         // Optionally try to re-enter fullscreen
         const elem = document.documentElement;
         if (elem.requestFullscreen) {
