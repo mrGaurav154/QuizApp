@@ -42,6 +42,14 @@ const quizSchema = new mongoose.Schema({
         default: 15
     },
     
+    // Minimum percentage required to pass
+    passPercentage: {
+        type: Number,
+        min: [1, 'Pass percentage must be at least 1'],
+        max: [100, 'Pass percentage cannot exceed 100'],
+        default: 60
+    },
+    
     // Difficulty level
     difficulty: {
         type: String,

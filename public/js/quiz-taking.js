@@ -167,6 +167,9 @@ function startQuiz() {
     isQuizActive = true;
     setupSecurityListeners();
 
+    // Start background music
+    if (typeof window.startMusic === 'function') window.startMusic();
+
     // Force Fullscreen
     const elem = document.documentElement;
     if (elem.requestFullscreen) {
@@ -199,10 +202,11 @@ function updateTimerDisplay() {
     const display = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     document.getElementById('timer').textContent = display;
     
-    // Visual warning
+    // Visual warning + urgency music when under 60 seconds
     if (secondsRemaining < 60) {
         document.getElementById('timerContainer').classList.add('border-red-500', 'text-red-500');
         document.getElementById('timerContainer').classList.remove('border-zinc-800');
+        if (typeof window.setUrgencyMode === 'function') window.setUrgencyMode(true);
     }
 }
 
@@ -291,6 +295,9 @@ async function submitQuiz(autoSubmitted = false) {
     isSubmitting = true;
     isQuizActive = false;
     clearInterval(timerInterval);
+    
+    // Stop background music
+    if (typeof window.stopMusic === 'function') window.stopMusic();
     
     // Remove listeners
     document.removeEventListener("visibilitychange", handleVisibilityChange);

@@ -658,6 +658,52 @@ body {
 }
 
 /* =============================================================================
+   LIGHT MODE OVERRIDES
+   ============================================================================= */
+
+body {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+[data-theme="light"] body,
+[data-theme="light"] {
+  color-scheme: light;
+}
+
+[data-theme="light"] body {
+  background-color: #f4f4f5 !important;
+  color: #18181b !important;
+}
+
+[data-theme="light"] .bg-zinc-950 { background-color: #ffffff !important; }
+[data-theme="light"] .bg-zinc-900 { background-color: #f4f4f5 !important; }
+[data-theme="light"] .bg-zinc-800 { background-color: #e4e4e7 !important; }
+[data-theme="light"] .bg-zinc-800\/50 { background-color: rgba(228,228,231,0.5) !important; }
+
+[data-theme="light"] .text-zinc-100 { color: #18181b !important; }
+[data-theme="light"] .text-zinc-300 { color: #3f3f46 !important; }
+[data-theme="light"] .text-zinc-400 { color: #52525b !important; }
+[data-theme="light"] .text-zinc-500 { color: #71717a !important; }
+
+[data-theme="light"] .border-zinc-800 { border-color: #d4d4d8 !important; }
+[data-theme="light"] .border-zinc-700 { border-color: #a1a1aa !important; }
+
+[data-theme="light"] nav.bg-zinc-950\/80 {
+  background-color: rgba(255,255,255,0.9) !important;
+  border-bottom-color: #e4e4e7 !important;
+}
+
+[data-theme="light"] aside {
+  background-color: #f4f4f5 !important;
+  border-right-color: #e4e4e7 !important;
+}
+
+[data-theme="light"] .card {
+  background-color: #ffffff !important;
+  border-color: #e4e4e7 !important;
+}
+
+/* =============================================================================
    RESPONSIVE
    ============================================================================= */
 
