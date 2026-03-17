@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quiz Result - QuizCraft</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts - Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="/css/styles.css" />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Inter", "system-ui", "sans-serif"],
+            },
+            colors: {
+              brand: {
+                50: "#eef2ff",
+                100: "#e0e7ff",
+                200: "#c7d2fe",
+                300: "#a5b4fc",
+                400: "#818cf8",
+                500: "#6366f1",
+                600: "#4f46e5",
+                700: "#4338ca",
+                800: "#3730a3",
+                900: "#312e81",
+              },
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="font-sans bg-zinc-950 text-zinc-100 antialiased min-h-screen flex items-center justify-center p-4"
+  >
+    <div
+      class="w-full max-w-lg bg-zinc-900 border border-zinc-800 rounded-2xl p-8 relative overflow-hidden"
+    >
+      <!-- Background Decoration -->
+      <div
+        class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-brand-500 via-purple-500 to-pink-500"
+      ></div>
+
+      <div id="loading" class="text-center py-12">
+        <i
+          data-lucide="loader"
+          class="w-10 h-10 text-brand-500 animate-spin mx-auto mb-4"
+        ></i>
+        <p class="text-zinc-500">Calculating your score...</p>
+      </div>
+
+      <div id="resultContent" class="hidden text-center">
+        <!-- Score Badge -->
+        <div
+          id="scoreBadge"
+          class="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 bg-zinc-800 border-4 border-zinc-700 shadow-xl"
+        >
+          <div>
+            <span id="scorePercentage" class="block text-2xl font-bold"
+              >0%</span
+            >
+          </div>
+        </div>
+
+        <h1 class="text-3xl font-bold mb-2" id="resultTitle">Quiz Completed!</h1>
+        <p id="resultMessage" class="text-zinc-400 mb-8">
+          Great job on finishing the quiz.
+        </p>
+
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-2 gap-4 mb-8">
+          <div class="bg-zinc-800/50 p-4 rounded-xl border border-zinc-800">
+            <p class="text-zinc-500 text-xs uppercase tracking-wider mb-1">
+              Correct Answers
+            </p>
+            <p id="scoreText" class="text-xl font-bold">0/0</p>
+          </div>
+          <div class="bg-zinc-800/50 p-4 rounded-xl border border-zinc-800">
+            <p class="text-zinc-500 text-xs uppercase tracking-wider mb-1">
+              Time Taken
+            </p>
+            <p id="timeText" class="text-xl font-bold">0m 0s</p>
+          </div>
+          <div class="bg-zinc-800/50 p-4 rounded-xl border border-zinc-800">
+            <p class="text-zinc-500 text-xs uppercase tracking-wider mb-1">
+              Total Points
+            </p>
+            <p id="pointsText" class="text-xl font-bold">0/0</p>
+          </div>
+          <div class="bg-zinc-800/50 p-4 rounded-xl border border-zinc-800">
+            <p class="text-zinc-500 text-xs uppercase tracking-wider mb-1">
+              Required to Pass
+            </p>
+            <p id="passPercentText" class="text-xl font-bold">0%</p>
+          </div>
+        </div>
+
+        <!-- Details Section -->
+        <div id="detailsSection" class="bg-zinc-800/50 p-6 rounded-xl border border-zinc-800 text-left mb-8">
+          <h3 class="text-lg font-bold mb-4 text-center">Quiz Details</h3>
+          <div class="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <p class="text-zinc-500">Quiz</p>
+              <p id="quizName" class="font-semibold">-</p>
+            </div>
+            <div>
+              <p class="text-zinc-500">Category</p>
+              <p id="categoryName" class="font-semibold">-</p>
+            </div>
+            <div>
+              <p class="text-zinc-500">Difficulty</p>
+              <p id="difficultyName" class="font-semibold">-</p>
+            </div>
+            <div>
+              <p class="text-zinc-500">Status</p>
+              <p id="statusName" class="font-semibold">-</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="space-y-3">
+          <a
+            href="/join-quiz.html"
+            class="block w-full py-3 bg-brand-500 hover:bg-brand-600 rounded-xl font-semibold transition-colors"
+          >
+            Take Another Quiz
+          </a>
+          <a
+            href="/"
+            class="block w-full py-3 bg-zinc-800 hover:bg-zinc-700 rounded-xl font-medium transition-colors"
+          >
+            Back to Home
+          </a>
+        </div>
+      </div>
+
+      <!-- Error State -->
+      <div id="errorContent" class="hidden text-center">
+        <div class="text-red-400 mb-4">
+          <i data-lucide="alert-circle" class="w-12 h-12 mx-auto"></i>
+        </div>
+        <p class="text-red-400 font-semibold mb-2">Failed to Load Results</p>
+        <p id="errorMessage" class="text-zinc-400 text-sm mb-6">Unable to fetch result data</p>
+        <div class="space-y-3">
+          <a
+            href="/results.html"
+            class="block w-full py-3 bg-brand-500 hover:bg-brand-600 rounded-xl font-semibold transition-colors"
+          >
+            Back to Results
+          </a>
+          <a
+            href="/"
+            class="block w-full py-3 bg-zinc-800 hover:bg-zinc-700 rounded-xl font-medium transition-colors"
+          >
+            Back to Home
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      lucide.createIcons();
+
+      function formatTime(seconds) {
+        const m = Math.floor(seconds / 60);
+        const s = seconds % 60;
+        return `${m}m ${s}s`;
+      }
+
+      async function loadResult() {
+        try {
+          const urlParams = new URLSearchParams(window.location.search);
+          const resultId = urlParams.get("id");
+
+          if (!resultId) {
+            throw new Error("No result ID provided");
+          }
+
+          console.log('Fetching result:', resultId);
+
+          // Fetch result details
+          const response = await fetch(`/api/results/${resultId}`);
+          const data = await response.json();
+
+          console.log('Result response:', data);
+
+          if (!response.ok) {
+            throw new Error(data.message || data.error || 'Failed to load result');
+          }
+
+          const result = data.data;
+
+          if (!result) {
+            throw new Error('No result data returned from server');
+          }
+
+          console.log('Result data:', result);
+
+          // Calculate percentage
+          const percentage = result.percentage !== undefined ? result.percentage : 
+            (result.totalPoints > 0 ? Math.round((result.score / result.totalPoints) * 100) : 0);
+          
+          // Update UI
+          document.getElementById("scorePercentage").textContent = `${percentage}%`;
+          document.getElementById("scoreText").textContent = `${result.correctAnswers}/${result.totalQuestions}`;
+          document.getElementById("pointsText").textContent = `${result.score}/${result.totalPoints}`;
+          document.getElementById("timeText").textContent = formatTime(result.timeTaken || 0);
+          
+          // Get pass percentage from quiz
+          const passPercentage = (result.quiz && result.quiz.passPercentage) ? result.quiz.passPercentage : 60;
+          document.getElementById("passPercentText").textContent = `${passPercentage}%`;
+          
+          // Populate quiz details
+          if (result.quiz) {
+            document.getElementById("quizName").textContent = result.quiz.title || '-';
+            document.getElementById("categoryName").textContent = result.quiz.category?.name || '-';
+            document.getElementById("difficultyName").textContent = (result.quiz.difficulty || '-').toUpperCase();
+          }
+
+          // Determine pass/fail
+          const passed = percentage >= passPercentage;
+          
+          // Update status
+          const statusEl = document.getElementById("statusName");
+          if (passed) {
+            statusEl.textContent = '✓ PASSED';
+            statusEl.classList.add('text-green-400');
+          } else {
+            statusEl.textContent = '✗ FAILED';
+            statusEl.classList.add('text-red-400');
+          }
+
+          // Style badge
+          const badge = document.getElementById("scoreBadge");
+          const resultTitle = document.getElementById("resultTitle");
+          const resultMessage = document.getElementById("resultMessage");
+
+          if (passed) {
+            badge.classList.add("border-green-500", "text-green-500", "bg-green-500/10");
+            badge.classList.remove("border-zinc-700", "bg-zinc-800");
+            resultTitle.textContent = "🎉 Congratulations!";
+            resultMessage.textContent = "You passed the quiz! Great job.";
+            resultMessage.classList.add("text-green-400");
+          } else {
+            badge.classList.add("border-red-500", "text-red-500", "bg-red-500/10");
+            badge.classList.remove("border-zinc-700", "bg-zinc-800");
+            resultTitle.textContent = "Quiz Completed";
+            resultMessage.textContent = "Keep practicing! You can do better next time.";
+            resultMessage.classList.add("text-red-400");
+          }
+
+          // Show result content
+          document.getElementById("loading").classList.add("hidden");
+          document.getElementById("resultContent").classList.remove("hidden");
+
+        } catch (error) {
+          console.error("Error loading result:", error);
+          
+          // Show error state
+          document.getElementById("loading").classList.add("hidden");
+          document.getElementById("errorContent").classList.remove("hidden");
+          document.getElementById("errorMessage").textContent = error.message || "Failed to load result";
+        }
+      }
+
+      // Load result when page loads
+      document.addEventListener("DOMContentLoaded", loadResult);
+    </script>
+  </body>
+</html>

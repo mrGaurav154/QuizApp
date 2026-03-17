@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Take Quiz - QuizCraft</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts - Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="/css/styles.css" />
+
+    <!-- Face API for Proctoring -->
+    <script defer src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.min.js"></script>
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Inter", "system-ui", "sans-serif"],
+            },
+            colors: {
+              brand: {
+                50: "#eef2ff",
+                100: "#e0e7ff",
+                200: "#c7d2fe",
+                300: "#a5b4fc",
+                400: "#818cf8",
+                500: "#6366f1",
+                600: "#4f46e5",
+                700: "#4338ca",
+                800: "#3730a3",
+                900: "#312e81",
+              },
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body class="font-sans bg-zinc-950 text-zinc-100 antialiased min-h-screen">
+    <!-- Navbar -->
+    <nav
+      class="fixed top-0 left-0 right-0 z-50 bg-zinc-950/80 backdrop-blur-lg border-b border-zinc-800"
+    >
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <div class="flex items-center gap-4">
+            <div
+              class="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center"
+            >
+              <i data-lucide="brain" class="w-5 h-5 text-white"></i>
+            </div>
+            <div>
+              <h1 id="navQuizTitle" class="font-bold text-lg hidden sm:block">
+                Quiz Title
+              </h1>
+              <p id="navStudentName" class="text-xs text-zinc-500">
+                Student Name
+              </p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-4">
+            <!-- Proctor Status -->
+            <div id="proctorStatus" class="hidden items-center gap-2 px-3 py-1.5 bg-zinc-900 border border-zinc-800 rounded-lg text-xs font-semibold">
+              <span class="w-2 h-2 rounded-full bg-zinc-500 animate-pulse" id="proctorDot"></span>
+              <span id="proctorText" class="text-zinc-400">Loading AI...</span>
+            </div>
+
+            <!-- Timer -->
+            <div
+              id="timerContainer"
+              class="flex items-center gap-2 px-3 py-1.5 bg-zinc-900 border border-zinc-800 rounded-lg"
+            >
+              <i data-lucide="clock" class="w-4 h-4 text-brand-400"></i>
+              <span id="timer" class="font-mono font-medium">00:00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-24 pb-16 px-4">
+      <div class="max-w-3xl mx-auto">
+        <!-- Loading State -->
+        <div id="loading" class="text-center py-20">
+          <i
+            data-lucide="loader"
+            class="w-12 h-12 text-brand-500 animate-spin mx-auto mb-4"
+          ></i>
+          <p class="text-zinc-400">Loading quiz...</p>
+        </div>
+
+        <!-- Start Screen -->
+        <div id="startScreen" class="hidden">
+          <div
+            class="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 text-center"
+          >
+            <div
+              class="w-20 h-20 bg-brand-500/10 rounded-full flex items-center justify-center mx-auto mb-6"
+            >
+              <i
+                id="quizIcon"
+                data-lucide="book-open"
+                class="w-10 h-10 text-brand-400"
+              ></i>
+            </div>
+            <h1 id="quizTitle" class="text-3xl font-bold mb-4">Quiz Title</h1>
+            <p id="quizDescription" class="text-zinc-400 mb-8 max-w-xl mx-auto">
+              Quiz description goes here.
+            </p>
+
+            <div class="grid grid-cols-3 gap-4 max-w-lg mx-auto mb-8">
+              <div class="bg-zinc-800 p-4 rounded-xl">
+                <i
+                  data-lucide="help-circle"
+                  class="w-6 h-6 text-brand-400 mx-auto mb-2"
+                ></i>
+                <p id="questionCount" class="font-bold text-xl">0</p>
+                <p class="text-xs text-zinc-500">Questions</p>
+              </div>
+              <div class="bg-zinc-800 p-4 rounded-xl">
+                <i
+                  data-lucide="clock"
+                  class="w-6 h-6 text-brand-400 mx-auto mb-2"
+                ></i>
+                <p id="timeLimit" class="font-bold text-xl">0m</p>
+                <p class="text-xs text-zinc-500">Time Limit</p>
+              </div>
+              <div class="bg-zinc-800 p-4 rounded-xl">
+                <i
+                  data-lucide="award"
+                  class="w-6 h-6 text-brand-400 mx-auto mb-2"
+                ></i>
+                <p id="passPercentage" class="font-bold text-xl">0%</p>
+                <p class="text-xs text-zinc-500">To Pass</p>
+              </div>
+            </div>
+
+            <div
+              class="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 mb-8 text-left"
+            >
+              <h3
+                class="font-semibold text-amber-400 flex items-center gap-2 mb-2"
+              >
+                <i data-lucide="alert-triangle" class="w-4 h-4"></i>
+                Instructions
+              </h3>
+              <ul class="list-disc list-inside text-sm text-zinc-300 space-y-1">
+                <li>Once you start, the timer will begin.</li>
+                <li>You cannot pause the quiz once started.</li>
+                <li>Answer all questions before submitting.</li>
+                <li>Don't refresh the page or you may lose progress.</li>
+              </ul>
+            </div>
+
+            <button
+              id="startBtn"
+              class="px-8 py-4 bg-brand-500 hover:bg-brand-600 text-white rounded-xl font-bold text-lg transition-transform hover:scale-105 shadow-lg shadow-brand-500/25 flex items-center justify-center gap-2 mx-auto"
+            >
+              <span>Start Quiz</span>
+              <i data-lucide="arrow-right" class="w-5 h-5"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Question Screen -->
+        <div id="questionScreen" class="hidden">
+          <!-- Progress Bar -->
+          <div class="mb-6">
+            <div
+              class="flex items-center justify-between text-sm text-zinc-400 mb-2"
+            >
+              <span
+                >Question <span id="currentQuestionNum">1</span> of
+                <span id="totalQuestionsNum">10</span></span
+              >
+              <span id="progressPercent">10%</span>
+            </div>
+            <div class="h-2 bg-zinc-800 rounded-full overflow-hidden">
+              <div
+                id="progressBar"
+                class="h-full bg-brand-500 transition-all duration-300"
+                style="width: 10%"
+              ></div>
+            </div>
+          </div>
+
+          <div
+            class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 md:p-8"
+          >
+            <h2
+              id="questionText"
+              class="text-xl md:text-2xl font-semibold mb-8 leading-relaxed"
+            >
+              Question text goes here?
+            </h2>
+
+            <div id="optionsContainer" class="space-y-4">
+              <!-- Options injected here -->
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between mt-8">
+            <button
+              id="prevBtn"
+              class="px-6 py-3 bg-zinc-800 hover:bg-zinc-700 rounded-xl font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Previous
+            </button>
+            <button
+              id="nextBtn"
+              class="px-6 py-3 bg-brand-500 hover:bg-brand-600 rounded-xl font-medium transition-colors"
+            >
+              Next
+            </button>
+            <button
+              id="submitBtn"
+              class="hidden px-6 py-3 bg-green-500 hover:bg-green-600 rounded-xl font-medium transition-colors shadow-lg shadow-green-500/20"
+            >
+              Submit Quiz
+            </button>
+          </div>
+        </div>
+
+        <!-- Result Screen (Simple Success Message before redirecting) -->
+        <div id="resultScreen" class="hidden text-center py-12">
+          <div
+            class="w-20 h-20 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-6"
+          >
+            <i data-lucide="check-circle" class="w-10 h-10 text-green-500"></i>
+          </div>
+          <h2 class="text-3xl font-bold mb-4">Quiz Completed!</h2>
+          <p class="text-zinc-400 mb-8">Submitting your results...</p>
+          <i
+            data-lucide="loader"
+            class="w-8 h-8 text-brand-500 animate-spin mx-auto"
+          ></i>
+        </div>
+      </div>
+    </main>
+
+    <!-- Floating Webcam Container -->
+    <div id="webcamContainer" class="hidden fixed bottom-4 right-4 z-[60] bg-zinc-900 border-2 border-zinc-800 rounded-xl overflow-hidden shadow-2xl shadow-black/50 transition-all hover:scale-105 group">
+        <div class="absolute top-2 left-2 z-10 bg-black/50 px-2 py-1 rounded text-[10px] font-bold tracking-wider text-white backdrop-blur-md flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
+            LIVE PROCTOR
+        </div>
+        <video id="webcamVideo" width="240" height="180" class="object-cover bg-zinc-950" autoplay muted playsinline></video>
+        <canvas id="webcamCanvas" class="absolute top-0 left-0 w-full h-full pointer-events-none"></canvas>
+    </div>
+
+    <!-- Quiz Taking Scripts -->
+    <script src="/js/proctor.js"></script>
+    <script src="/js/quiz-taking.js"></script>
+
+    <script>
+      lucide.createIcons();
+    </script>
+  </body>
+</html>

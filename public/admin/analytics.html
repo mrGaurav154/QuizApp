@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Analytics - Admin Panel</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="/css/styles.css" />
+  <script>
+    tailwind.config = { theme: { extend: { fontFamily: { sans: ["Inter", "system-ui", "sans-serif"] }, colors: { brand: { 400: "#818cf8", 500: "#6366f1", 600: "#4f46e5" } } } } };
+  </script>
+  <style>
+    #sidebar {
+      transition: transform 0.3s ease-in-out;
+    }
+
+    #sidebar-overlay {
+      transition: opacity 0.3s ease-in-out;
+    }
+  </style>
+</head>
+
+<body class="font-sans bg-zinc-950 text-zinc-100 antialiased min-h-screen">
+
+  <!-- Mobile Header -->
+  <header
+    class="md:hidden sticky top-0 z-30 flex items-center justify-between px-4 py-3 bg-zinc-900 border-b border-zinc-800">
+    <a href="/" class="flex items-center gap-2">
+      <div class="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center">
+        <i data-lucide="shield" class="w-5 h-5 text-white"></i>
+      </div>
+      <span class="text-lg font-bold">Quiz<span class="text-purple-400">Craft</span></span>
+    </a>
+    <button onclick="toggleSidebar()"
+      class="p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors">
+      <i data-lucide="menu" class="w-6 h-6"></i>
+    </button>
+  </header>
+
+  <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 z-40 hidden opacity-0" onclick="toggleSidebar()"></div>
+
+  <aside id="sidebar"
+    class="fixed top-0 left-0 h-full w-64 bg-zinc-900 border-r border-zinc-800 p-4 flex flex-col z-50 -translate-x-full md:translate-x-0">
+    <a href="/" class="hidden md:flex items-center gap-2 mb-8">
+      <div class="w-10 h-10 bg-purple-500 rounded-xl flex items-center justify-center">
+        <i data-lucide="shield" class="w-6 h-6 text-white"></i>
+      </div>
+      <span class="text-xl font-bold">Quiz<span class="text-purple-400">Craft</span></span>
+    </a>
+    <div class="md:hidden flex items-center justify-between mb-6">
+      <span class="text-lg font-bold">Quiz<span class="text-purple-400">Craft</span></span>
+      <button onclick="toggleSidebar()" class="p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+
+    <nav class="flex-1 space-y-1">
+      <a href="/admin/dashboard.html"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors"><i
+          data-lucide="layout-dashboard" class="w-5 h-5"></i><span>Dashboard</span></a>
+      <a href="/admin/users.html"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors"><i
+          data-lucide="users" class="w-5 h-5"></i><span>Manage Users</span></a>
+      <a href="/admin/categories.html"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors"><i
+          data-lucide="folder" class="w-5 h-5"></i><span>Categories</span></a>
+      <a href="/admin/quizzes.html"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors"><i
+          data-lucide="file-question" class="w-5 h-5"></i><span>All Quizzes</span></a>
+      <a href="/admin/analytics.html"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20"><i
+          data-lucide="bar-chart-3" class="w-5 h-5"></i><span class="font-medium">Analytics</span></a>
+    </nav>
+
+    <div class="border-t border-zinc-800 pt-4 mt-4">
+      <div class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-zinc-800 transition-colors">
+        <div class="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
+          <span id="userInitial" class="font-semibold text-white">A</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p id="userName" class="font-medium truncate">Admin</p>
+          <p class="text-xs text-zinc-500">Administrator</p>
+        </div>
+        <button id="logoutBtn" class="text-zinc-500 hover:text-red-400 transition-colors" title="Logout">
+          <i data-lucide="log-out" class="w-5 h-5"></i>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="md:ml-64 p-4 md:p-8 min-h-screen">
+    <div class="mb-6 md:mb-8">
+      <h1 class="text-2xl md:text-3xl font-bold mb-1">Platform Analytics</h1>
+      <p class="text-zinc-400 text-sm md:text-base">Comprehensive platform statistics and insights</p>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8">
+      <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 md:p-6">
+        <div
+          class="w-10 h-10 md:w-12 md:h-12 bg-purple-500/10 rounded-xl flex items-center justify-center mb-3 md:mb-4">
+          <i data-lucide="users" class="w-5 h-5 md:w-6 md:h-6 text-purple-400"></i>
+        </div>
+        <p class="text-2xl md:text-3xl font-bold mb-1" id="totalTeachers">0</p>
+        <p class="text-zinc-500 text-xs md:text-sm">Total Teachers</p>
+      </div>
+
+      <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 md:p-6">
+        <div class="w-10 h-10 md:w-12 md:h-12 bg-amber-500/10 rounded-xl flex items-center justify-center mb-3 md:mb-4">
+          <i data-lucide="file-question" class="w-5 h-5 md:w-6 md:h-6 text-amber-400"></i>
+        </div>
+        <p class="text-2xl md:text-3xl font-bold mb-1" id="totalQuizzes">0</p>
+        <p class="text-zinc-500 text-xs md:text-sm">Total Quizzes</p>
+      </div>
+
+      <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 md:p-6">
+        <div class="w-10 h-10 md:w-12 md:h-12 bg-green-500/10 rounded-xl flex items-center justify-center mb-3 md:mb-4">
+          <i data-lucide="check-circle" class="w-5 h-5 md:w-6 md:h-6 text-green-400"></i>
+        </div>
+        <p class="text-2xl md:text-3xl font-bold mb-1" id="totalAttempts">0</p>
+        <p class="text-zinc-500 text-xs md:text-sm">Total Attempts</p>
+      </div>
+
+      <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 md:p-6">
+        <div class="w-10 h-10 md:w-12 md:h-12 bg-blue-500/10 rounded-xl flex items-center justify-center mb-3 md:mb-4">
+          <i data-lucide="folder" class="w-5 h-5 md:w-6 md:h-6 text-blue-400"></i>
+        </div>
+        <p class="text-2xl md:text-3xl font-bold mb-1" id="totalCategories">0</p>
+        <p class="text-zinc-500 text-xs md:text-sm">Total Categories</p>
+      </div>
+    </div>
+
+    <!-- Platform Overview Card -->
+    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 md:p-6">
+      <h2 class="text-lg md:text-xl font-bold mb-4">Platform Overview</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="bg-zinc-800/50 rounded-xl p-4">
+          <div class="flex items-center gap-3 mb-2">
+            <div class="w-9 h-9 bg-purple-500/20 rounded-lg flex items-center justify-center">
+              <i data-lucide="trending-up" class="w-5 h-5 text-purple-400"></i>
+            </div>
+            <p class="text-sm text-zinc-400">Avg Quiz Score</p>
+          </div>
+          <p id="avgScore" class="text-2xl font-bold">--</p>
+        </div>
+        <div class="bg-zinc-800/50 rounded-xl p-4">
+          <div class="flex items-center gap-3 mb-2">
+            <div class="w-9 h-9 bg-green-500/20 rounded-lg flex items-center justify-center">
+              <i data-lucide="target" class="w-5 h-5 text-green-400"></i>
+            </div>
+            <p class="text-sm text-zinc-400">Pass Rate</p>
+          </div>
+          <p id="passRate" class="text-2xl font-bold">--</p>
+        </div>
+        <div class="bg-zinc-800/50 rounded-xl p-4">
+          <div class="flex items-center gap-3 mb-2">
+            <div class="w-9 h-9 bg-amber-500/20 rounded-lg flex items-center justify-center">
+              <i data-lucide="user-check" class="w-5 h-5 text-amber-400"></i>
+            </div>
+            <p class="text-sm text-zinc-400">Active Teachers</p>
+          </div>
+          <p id="activeTeachers" class="text-2xl font-bold">--</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="/js/auth.js"></script>
+  <script>
+    function toggleSidebar() {
+      const s = document.getElementById('sidebar'), o = document.getElementById('sidebar-overlay');
+      const open = !s.classList.contains('-translate-x-full');
+      if (open) { s.classList.add('-translate-x-full'); o.classList.add('opacity-0'); setTimeout(() => o.classList.add('hidden'), 300); }
+      else { o.classList.remove('hidden'); requestAnimationFrame(() => requestAnimationFrame(() => { s.classList.remove('-translate-x-full'); o.classList.remove('opacity-0'); })); }
+    }
+    document.querySelectorAll('#sidebar nav a').forEach(l => l.addEventListener('click', () => { if (window.innerWidth < 768) toggleSidebar(); }));
+    window.addEventListener('resize', () => { if (window.innerWidth >= 768) { document.getElementById('sidebar').classList.remove('-translate-x-full'); document.getElementById('sidebar-overlay').classList.add('hidden', 'opacity-0'); } });
+
+    lucide.createIcons();
+    let currentUser = null;
+
+    async function initPage() {
+      currentUser = await initAuth();
+      if (currentUser && currentUser.role === "admin") { await loadAnalytics(); }
+      else { window.location.href = "/admin/dashboard.html"; }
+    }
+
+    async function loadAnalytics() {
+      try {
+        const [teachersRes, quizzesRes, resultsRes, categoriesRes] = await Promise.all([
+          fetch("/api/users/teachers?limit=1000", { credentials: "include" }),
+          fetch("/api/quizzes?limit=1000", { credentials: "include" }),
+          fetch("/api/results?limit=1000", { credentials: "include" }),
+          fetch("/api/categories", { credentials: "include" }),
+        ]);
+        const teachers = (await teachersRes.json()).teachers || [];
+        const quizzes = (await quizzesRes.json()).quizzes || [];
+        const results = (await resultsRes.json()).data || [];
+        const categories = (await categoriesRes.json()).categories || [];
+
+        document.getElementById("totalTeachers").textContent = teachers.length;
+        document.getElementById("totalQuizzes").textContent = quizzes.length;
+        document.getElementById("totalAttempts").textContent = results.length;
+        document.getElementById("totalCategories").textContent = categories.length;
+
+        const avgScore = results.length > 0
+          ? Math.round(results.reduce((s, r) => s + r.percentage, 0) / results.length) + "%"
+          : "N/A";
+        const passRate = results.length > 0
+          ? Math.round((results.filter(r => r.percentage >= 60).length / results.length) * 100) + "%"
+          : "N/A";
+
+        document.getElementById("avgScore").textContent = avgScore;
+        document.getElementById("passRate").textContent = passRate;
+        document.getElementById("activeTeachers").textContent = teachers.filter(t => t.isActive).length;
+      } catch (error) {
+        console.error("Load analytics error:", error);
+      }
+    }
+
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      try { await fetch("/api/auth/logout", { method: "POST", credentials: "include" }); } catch (e) { }
+      localStorage.removeItem("user"); window.location.href = "/login.html";
+    });
+
+    initPage();
+  </script>
+</body>
+
+</html>

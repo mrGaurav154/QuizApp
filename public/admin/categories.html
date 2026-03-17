@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Manage Categories - QuizCraft Admin" />
+  <title>Categories - Admin Panel</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="/css/styles.css" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ["Inter", "system-ui", "sans-serif"] },
+          colors: {
+            brand: { 50: "#eef2ff", 100: "#e0e7ff", 200: "#c7d2fe", 300: "#a5b4fc", 400: "#818cf8", 500: "#6366f1", 600: "#4f46e5", 700: "#4338ca", 800: "#3730a3", 900: "#312e81" },
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    #sidebar {
+      transition: transform 0.3s ease-in-out;
+    }
+
+    #sidebar-overlay {
+      transition: opacity 0.3s ease-in-out;
+    }
+  </style>
+</head>
+
+<body class="font-sans bg-zinc-950 text-zinc-100 antialiased min-h-screen">
+
+  <!-- Mobile Header -->
+  <header
+    class="md:hidden sticky top-0 z-30 flex items-center justify-between px-4 py-3 bg-zinc-900 border-b border-zinc-800">
+    <a href="/" class="flex items-center gap-2">
+      <div class="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center">
+        <i data-lucide="shield" class="w-5 h-5 text-white"></i>
+      </div>
+      <span class="text-lg font-bold">Quiz<span class="text-purple-400">Craft</span></span>
+    </a>
+    <button onclick="toggleSidebar()"
+      class="p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors" aria-label="Open menu">
+      <i data-lucide="menu" class="w-6 h-6"></i>
+    </button>
+  </header>
+
+  <!-- Overlay -->
+  <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 z-40 hidden opacity-0" onclick="toggleSidebar()"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar"
+    class="fixed top-0 left-0 h-full w-64 bg-zinc-900 border-r border-zinc-800 p-4 flex flex-col z-50 -translate-x-full md:translate-x-0">
+    <a href="/" class="hidden md:flex items-center gap-2 mb-8">
+      <div class="w-10 h-10 bg-purple-500 rounded-xl flex items-center justify-center">
+        <i data-lucide="shield" class="w-6 h-6 text-white"></i>
+      </div>
+      <span class="text-xl font-bold">Quiz<span class="text-purple-400">Craft</span></span>
+    </a>
+    <div class="md:hidden flex items-center justify-between mb-6">
+      <a href="/" class="flex items-center gap-2">
+        <div class="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center">
+          <i data-lucide="shield" class="w-5 h-5 text-white"></i>
+        </div>
+        <span class="text-lg font-bold">Quiz<span class="text-purple-400">Craft</span></span>
+      </a>
+      <button onclick="toggleSidebar()"
+        class="p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+
+    <nav class="flex-1 space-y-1">
+      <a href="/admin/dashboard.html"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors">
+        <i data-lucide="layout-dashboard" class="w-5 h-5"></i><span>Dashboard</span>
+      </a>
+      <a href="/admin/users.html"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors">
+        <i data-lucide="users" class="w-5 h-5"></i><span>Manage Users</span>
+      </a>
+      <a href="/admin/categories.html"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20">
+        <i data-lucide="folder" class="w-5 h-5"></i><span class="font-medium">Categories</span>
+      </a>
+      <a href="/admin/quizzes.html"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors">
+        <i data-lucide="file-question" class="w-5 h-5"></i><span>All Quizzes</span>
+      </a>
+      <a href="/admin/analytics.html"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors">
+        <i data-lucide="bar-chart-3" class="w-5 h-5"></i><span>Analytics</span>
+      </a>
+    </nav>
+
+    <div class="border-t border-zinc-800 pt-4 mt-4">
+      <div class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-zinc-800 cursor-pointer transition-colors">
+        <div class="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
+          <span id="userInitial" class="font-semibold text-white">A</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p id="userName" class="font-medium truncate">Admin</p>
+          <p class="text-xs text-zinc-500">Administrator</p>
+        </div>
+        <button id="logoutBtn" class="text-zinc-500 hover:text-red-400 transition-colors" title="Logout">
+          <i data-lucide="log-out" class="w-5 h-5"></i>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="md:ml-64 p-4 md:p-8 min-h-screen">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 md:mb-8">
+      <div>
+        <h1 class="text-2xl md:text-3xl font-bold mb-1">Quiz Categories</h1>
+        <p class="text-zinc-400 text-sm md:text-base">Manage and organize quiz categories</p>
+      </div>
+      <button
+        class="flex items-center justify-center gap-2 px-4 py-2.5 md:px-5 md:py-3 bg-purple-500 hover:bg-purple-600 rounded-xl transition-colors text-sm md:text-base w-full sm:w-auto"
+        onclick="showAddCategoryModal()">
+        <i data-lucide="folder-plus" class="w-5 h-5"></i>
+        Add Category
+      </button>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6" id="categoriesGrid">
+      <div class="col-span-full text-center py-20 text-zinc-500">
+        <i data-lucide="loader" class="w-8 h-8 animate-spin mx-auto mb-2"></i>
+        <p>Loading categories...</p>
+      </div>
+    </div>
+  </main>
+
+  <script src="/js/auth.js"></script>
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebar-overlay');
+      const isOpen = !sidebar.classList.contains('-translate-x-full');
+      if (isOpen) {
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('opacity-0');
+        setTimeout(() => overlay.classList.add('hidden'), 300);
+      } else {
+        overlay.classList.remove('hidden');
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          sidebar.classList.remove('-translate-x-full');
+          overlay.classList.remove('opacity-0');
+        }));
+      }
+    }
+    document.querySelectorAll('#sidebar nav a').forEach(l => l.addEventListener('click', () => { if (window.innerWidth < 768) toggleSidebar(); }));
+    window.addEventListener('resize', () => {
+      if (window.innerWidth >= 768) {
+        document.getElementById('sidebar').classList.remove('-translate-x-full');
+        const ov = document.getElementById('sidebar-overlay');
+        ov.classList.add('hidden', 'opacity-0');
+      }
+    });
+
+    lucide.createIcons();
+    let allCategories = [];
+    let currentUser = null;
+
+    async function initPage() {
+      currentUser = await initAuth();
+      if (currentUser && currentUser.role === "admin") {
+        await loadCategories();
+      } else {
+        window.location.href = "/admin/dashboard.html";
+      }
+    }
+
+    async function loadCategories() {
+      try {
+        const response = await fetch("/api/categories", { credentials: "include" });
+        if (!response.ok) throw new Error("Failed to load categories");
+        const data = await response.json();
+        allCategories = data.categories || [];
+        displayCategories(allCategories);
+      } catch (error) {
+        console.error("Load categories error:", error);
+        document.getElementById("categoriesGrid").innerHTML = `<div class="col-span-full text-center py-8 text-red-500">Error: ${error.message}</div>`;
+      }
+    }
+
+    function displayCategories(categories) {
+      const grid = document.getElementById("categoriesGrid");
+      if (!categories || categories.length === 0) {
+        grid.innerHTML = `
+            <div class="col-span-full text-center py-20">
+              <i data-lucide="inbox" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>
+              <p class="text-zinc-500 mb-4">No categories found</p>
+              <button class="px-4 py-2 bg-purple-500 hover:bg-purple-600 rounded-lg" onclick="showAddCategoryModal()">Create First Category</button>
+            </div>`;
+        lucide.createIcons(); return;
+      }
+      grid.innerHTML = categories.map(cat => `
+          <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 md:p-6">
+            <div class="flex items-center justify-between mb-4">
+              <div class="w-11 h-11 md:w-12 md:h-12 bg-purple-500/20 rounded-xl flex items-center justify-center">
+                <i data-lucide="${cat.icon || 'folder'}" class="w-5 h-5 md:w-6 md:h-6 text-purple-400"></i>
+              </div>
+              <div class="flex gap-1">
+                <button class="p-2 hover:bg-zinc-800 rounded-lg" onclick="editCategory('${cat._id}', '${cat.name}', '${cat.icon}')">
+                  <i data-lucide="edit" class="w-4 h-4 text-zinc-400"></i>
+                </button>
+                <button class="p-2 hover:bg-zinc-800 rounded-lg text-red-400" onclick="deleteCategory('${cat._id}', '${cat.name}')">
+                  <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
+              </div>
+            </div>
+            <h3 class="text-base md:text-lg font-semibold mb-1">${cat.name}</h3>
+            <p class="text-sm text-zinc-500 mb-3">${cat.description || 'No description'}</p>
+            <div class="text-xs text-zinc-600">
+              <p>Quizzes: <span class="font-semibold">${cat.quizCount || 0}</span></p>
+            </div>
+          </div>`).join("");
+      lucide.createIcons();
+    }
+
+    window.showAddCategoryModal = function () {
+      const name = prompt("Category name:"); if (!name) return;
+      const description = prompt("Category description (optional):");
+      const icon = prompt("Icon name (e.g., 'book-open', 'flask-conical'):", "folder");
+      addCategory(name, description, icon);
+    };
+
+    async function addCategory(name, description, icon) {
+      try {
+        const response = await fetch("/api/categories", { method: "POST", headers: { "Content-Type": "application/json" }, credentials: "include", body: JSON.stringify({ name, description, icon }) });
+        if (!response.ok) throw new Error("Failed to add category");
+        alert("Category added successfully!"); loadCategories();
+      } catch (error) { alert("Error: " + error.message); }
+    }
+
+    window.editCategory = function (id, name, icon) {
+      const newName = prompt("Edit category name:", name); if (!newName) return;
+      const newIcon = prompt("Edit icon name:", icon);
+      updateCategory(id, newName, newIcon);
+    };
+
+    async function updateCategory(id, name, icon) {
+      try {
+        const response = await fetch(`/api/categories/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, credentials: "include", body: JSON.stringify({ name, icon }) });
+        if (!response.ok) throw new Error("Failed to update category");
+        alert("Category updated successfully!"); loadCategories();
+      } catch (error) { alert("Error: " + error.message); }
+    }
+
+    window.deleteCategory = async function (id, name) {
+      if (!confirm(`Delete category "${name}"?`)) return;
+      try {
+        const response = await fetch(`/api/categories/${id}`, { method: "DELETE", credentials: "include" });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Failed to delete category");
+        alert("Category deleted successfully!"); loadCategories();
+      } catch (error) { alert("Error: " + error.message); }
+    };
+
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      try { await fetch("/api/auth/logout", { method: "POST", credentials: "include" }); } catch (e) { }
+      localStorage.removeItem("user"); window.location.href = "/login.html";
+    });
+
+    initPage();
+  </script>
+</body>
+
+</html>

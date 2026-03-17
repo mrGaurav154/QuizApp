@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Manage Users - QuizCraft Admin" />
+  <title>Manage Users - Admin Panel</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="/css/styles.css" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ["Inter", "system-ui", "sans-serif"] },
+          colors: {
+            brand: { 50: "#eef2ff", 100: "#e0e7ff", 200: "#c7d2fe", 300: "#a5b4fc", 400: "#818cf8", 500: "#6366f1", 600: "#4f46e5", 700: "#4338ca", 800: "#3730a3", 900: "#312e81" },
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    #sidebar {
+      transition: transform 0.3s ease-in-out;
+    }
+
+    #sidebar-overlay {
+      transition: opacity 0.3s ease-in-out;
+    }
+  </style>
+</head>
+
+<body class="font-sans bg-zinc-950 text-zinc-100 antialiased min-h-screen">
+
+  <!-- Mobile Header -->
+  <header
+    class="md:hidden sticky top-0 z-30 flex items-center justify-between px-4 py-3 bg-zinc-900 border-b border-zinc-800">
+    <a href="/" class="flex items-center gap-2">
+      <div class="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center">
+        <i data-lucide="shield" class="w-5 h-5 text-white"></i>
+      </div>
+      <span class="text-lg font-bold">Quiz<span class="text-purple-400">Craft</span></span>
+    </a>
+    <button onclick="toggleSidebar()"
+      class="p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors" aria-label="Open menu">
+      <i data-lucide="menu" class="w-6 h-6"></i>
+    </button>
+  </header>
+
+  <!-- Overlay -->
+  <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 z-40 hidden opacity-0" onclick="toggleSidebar()"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar"
+    class="fixed top-0 left-0 h-full w-64 bg-zinc-900 border-r border-zinc-800 p-4 flex flex-col z-50 -translate-x-full md:translate-x-0">
+    <!-- Desktop Logo -->
+    <a href="/" class="hidden md:flex items-center gap-2 mb-8">
+      <div class="w-10 h-10 bg-purple-500 rounded-xl flex items-center justify-center">
+        <i data-lucide="shield" class="w-6 h-6 text-white"></i>
+      </div>
+      <span class="text-xl font-bold">Quiz<span class="text-purple-400">Craft</span></span>
+    </a>
+    <!-- Mobile Header inside sidebar -->
+    <div class="md:hidden flex items-center justify-between mb-6">
+      <a href="/" class="flex items-center gap-2">
+        <div class="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center">
+          <i data-lucide="shield" class="w-5 h-5 text-white"></i>
+        </div>
+        <span class="text-lg font-bold">Quiz<span class="text-purple-400">Craft</span></span>
+      </a>
+      <button onclick="toggleSidebar()"
+        class="p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+
+    <nav class="flex-1 space-y-1">
+      <a href="/admin/dashboard.html"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors">
+        <i data-lucide="layout-dashboard" class="w-5 h-5"></i><span>Dashboard</span>
+      </a>
+      <a href="/admin/users.html"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20">
+        <i data-lucide="users" class="w-5 h-5"></i><span class="font-medium">Manage Users</span>
+      </a>
+      <a href="/admin/categories.html"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors">
+        <i data-lucide="folder" class="w-5 h-5"></i><span>Categories</span>
+      </a>
+      <a href="/admin/quizzes.html"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors">
+        <i data-lucide="file-question" class="w-5 h-5"></i><span>All Quizzes</span>
+      </a>
+      <a href="/admin/analytics.html"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors">
+        <i data-lucide="bar-chart-3" class="w-5 h-5"></i><span>Analytics</span>
+      </a>
+    </nav>
+
+    <div class="border-t border-zinc-800 pt-4 mt-4">
+      <div class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-zinc-800 cursor-pointer transition-colors">
+        <div class="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
+          <span id="userInitial" class="font-semibold text-white">A</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p id="userName" class="font-medium truncate">Admin</p>
+          <p class="text-xs text-zinc-500">Administrator</p>
+        </div>
+        <button id="logoutBtn" class="text-zinc-500 hover:text-red-400 transition-colors" title="Logout">
+          <i data-lucide="log-out" class="w-5 h-5"></i>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="md:ml-64 p-4 md:p-8 min-h-screen">
+    <!-- Page Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 md:mb-8">
+      <div>
+        <h1 class="text-2xl md:text-3xl font-bold mb-1">Manage Teachers</h1>
+        <p class="text-zinc-400 text-sm md:text-base">View and manage all teacher accounts</p>
+      </div>
+      <button
+        class="flex items-center justify-center gap-2 px-4 py-2.5 md:px-5 md:py-3 bg-purple-500 hover:bg-purple-600 rounded-xl transition-colors text-sm md:text-base w-full sm:w-auto"
+        onclick="showAddTeacherModal()">
+        <i data-lucide="user-plus" class="w-5 h-5"></i>
+        Add Teacher
+      </button>
+    </div>
+
+    <!-- Filters -->
+    <div class="flex flex-col sm:flex-row gap-3 mb-6">
+      <div class="flex-1 relative">
+        <i data-lucide="search" class="w-5 h-5 text-zinc-500 absolute left-4 top-1/2 -translate-y-1/2"></i>
+        <input type="text" id="searchInput"
+          class="w-full pl-12 pr-4 py-3 bg-zinc-900 border border-zinc-800 rounded-xl focus:border-purple-500 outline-none transition-colors text-sm"
+          placeholder="Search teachers..." />
+      </div>
+      <select id="statusFilter"
+        class="px-4 py-3 bg-zinc-900 border border-zinc-800 rounded-xl focus:border-purple-500 outline-none transition-colors text-sm"
+        title="Filter by status">
+        <option value="all">All Status</option>
+        <option value="active">Active</option>
+        <option value="inactive">Inactive</option>
+      </select>
+    </div>
+
+    <!-- Table -->
+    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full min-w-[560px]">
+          <thead>
+            <tr class="border-b border-zinc-800">
+              <th class="text-left px-4 md:px-6 py-4 text-sm font-medium text-zinc-400">Name</th>
+              <th class="text-left px-4 md:px-6 py-4 text-sm font-medium text-zinc-400">Email</th>
+              <th class="text-left px-4 md:px-6 py-4 text-sm font-medium text-zinc-400 hidden sm:table-cell">Institution
+              </th>
+              <th class="text-left px-4 md:px-6 py-4 text-sm font-medium text-zinc-400">Status</th>
+              <th class="text-left px-4 md:px-6 py-4 text-sm font-medium text-zinc-400 hidden md:table-cell">Joined</th>
+              <th class="text-right px-4 md:px-6 py-4 text-sm font-medium text-zinc-400">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="teachersTableBody" class="divide-y divide-zinc-800">
+            <tr>
+              <td colspan="6" class="px-6 py-8 text-center text-zinc-500">
+                <i data-lucide="loader" class="w-6 h-6 animate-spin mx-auto mb-2"></i>
+                <p>Loading teachers...</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <script src="/js/auth.js"></script>
+  <script>
+    // Sidebar toggle
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebar-overlay');
+      const isOpen = !sidebar.classList.contains('-translate-x-full');
+      if (isOpen) {
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('opacity-0');
+        setTimeout(() => overlay.classList.add('hidden'), 300);
+      } else {
+        overlay.classList.remove('hidden');
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          sidebar.classList.remove('-translate-x-full');
+          overlay.classList.remove('opacity-0');
+        }));
+      }
+    }
+    document.querySelectorAll('#sidebar nav a').forEach(l => l.addEventListener('click', () => { if (window.innerWidth < 768) toggleSidebar(); }));
+    window.addEventListener('resize', () => {
+      if (window.innerWidth >= 768) {
+        document.getElementById('sidebar').classList.remove('-translate-x-full');
+        const ov = document.getElementById('sidebar-overlay');
+        ov.classList.add('hidden', 'opacity-0');
+      }
+    });
+
+    lucide.createIcons();
+    let allTeachers = [];
+    let currentUser = null;
+
+    async function initPage() {
+      currentUser = await initAuth();
+      if (currentUser && currentUser.role === "admin") {
+        await loadTeachers();
+      } else {
+        window.location.href = "/admin/dashboard.html";
+      }
+    }
+
+    async function loadTeachers() {
+      try {
+        const response = await fetch("/api/users/teachers?limit=100", { credentials: "include" });
+        if (!response.ok) throw new Error("Failed to load teachers");
+        const data = await response.json();
+        allTeachers = data.teachers || [];
+        displayTeachers(allTeachers);
+      } catch (error) {
+        console.error("Load teachers error:", error);
+        document.getElementById("teachersTableBody").innerHTML = `<tr><td colspan="6" class="px-6 py-8 text-center text-red-500">Error: ${error.message}</td></tr>`;
+      }
+    }
+
+    function displayTeachers(teachers) {
+      const tbody = document.getElementById("teachersTableBody");
+      if (!teachers || teachers.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-8 text-center text-zinc-500"><i data-lucide="inbox" class="w-8 h-8 mx-auto mb-2 opacity-50"></i><p>No teachers found</p></td></tr>`;
+        lucide.createIcons(); return;
+      }
+      tbody.innerHTML = teachers.map(teacher => {
+        const joinedDate = new Date(teacher.createdAt).toLocaleDateString();
+        return `
+            <tr class="hover:bg-zinc-800/50 transition-colors">
+              <td class="px-4 md:px-6 py-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
+                    <span class="text-sm font-medium">${(teacher.name || "T").charAt(0).toUpperCase()}</span>
+                  </div>
+                  <span class="font-medium text-sm">${teacher.name || "Unknown"}</span>
+                </div>
+              </td>
+              <td class="px-4 md:px-6 py-4 text-zinc-400 text-sm">${teacher.email}</td>
+              <td class="px-4 md:px-6 py-4 text-zinc-400 text-sm hidden sm:table-cell">${teacher.institution || "-"}</td>
+              <td class="px-4 md:px-6 py-4">
+                <span class="px-2 py-1 ${teacher.isActive ? "bg-green-500/10 text-green-400" : "bg-red-500/10 text-red-400"} text-xs font-medium rounded-full whitespace-nowrap">
+                  ${teacher.isActive ? "Active" : "Inactive"}
+                </span>
+              </td>
+              <td class="px-4 md:px-6 py-4 text-zinc-400 text-sm hidden md:table-cell">${joinedDate}</td>
+              <td class="px-4 md:px-6 py-4 text-right">
+                <button class="p-2 hover:bg-zinc-700 rounded-lg transition-colors" onclick="editTeacher('${teacher._id}', '${teacher.name}', '${teacher.institution || ""}')">
+                  <i data-lucide="edit" class="w-4 h-4 text-zinc-400"></i>
+                </button>
+                <button class="p-2 hover:bg-zinc-700 rounded-lg transition-colors text-red-400" onclick="deleteTeacher('${teacher._id}', '${teacher.name}')">
+                  <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
+              </td>
+            </tr>`;
+      }).join("");
+      lucide.createIcons();
+    }
+
+    document.getElementById("searchInput").addEventListener("input", (e) => {
+      const query = e.target.value.toLowerCase();
+      displayTeachers(allTeachers.filter(t => t.name.toLowerCase().includes(query) || t.email.toLowerCase().includes(query) || (t.institution && t.institution.toLowerCase().includes(query))));
+    });
+
+    document.getElementById("statusFilter").addEventListener("change", (e) => {
+      const s = e.target.value;
+      displayTeachers(s === "all" ? allTeachers : allTeachers.filter(t => s === "active" ? t.isActive : !t.isActive));
+    });
+
+    window.editTeacher = function (id, name, institution) {
+      const newName = prompt("Edit teacher name:", name);
+      if (!newName) return;
+      const newInstitution = prompt("Edit institution:", institution);
+      updateTeacher(id, newName, newInstitution);
+    };
+
+    async function updateTeacher(id, name, institution) {
+      try {
+        const response = await fetch(`/api/users/teachers/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, credentials: "include", body: JSON.stringify({ name, institution }) });
+        if (!response.ok) throw new Error("Failed to update teacher");
+        alert("Teacher updated successfully!"); loadTeachers();
+      } catch (error) { alert("Error: " + error.message); }
+    }
+
+    window.deleteTeacher = async function (id, name) {
+      if (!confirm(`Are you sure you want to delete ${name}?`)) return;
+      try {
+        const response = await fetch(`/api/users/teachers/${id}`, { method: "DELETE", credentials: "include" });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Failed to delete teacher");
+        alert("Teacher deleted successfully!"); loadTeachers();
+      } catch (error) { alert("Error: " + error.message); }
+    };
+
+    window.showAddTeacherModal = function () {
+      alert("Teacher registration is done through the registration form at /register-teacher.html");
+    };
+
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      try { await fetch("/api/auth/logout", { method: "POST", credentials: "include" }); } catch (e) { }
+      localStorage.removeItem("user"); window.location.href = "/login.html";
+    });
+
+    initPage();
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,495 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Create your QuizCraft teacher account - Start creating engaging quizzes today"
+    />
+    <title>Teacher Registration - QuizCraft</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts - Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="/css/styles.css" />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Inter", "system-ui", "sans-serif"],
+            },
+            colors: {
+              brand: {
+                50: "#eef2ff",
+                100: "#e0e7ff",
+                200: "#c7d2fe",
+                300: "#a5b4fc",
+                400: "#818cf8",
+                500: "#6366f1",
+                600: "#4f46e5",
+                700: "#4338ca",
+                800: "#3730a3",
+                900: "#312e81",
+              },
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="font-sans bg-zinc-950 text-zinc-100 antialiased min-h-screen flex"
+  >
+    <!-- Left Side - Branding -->
+    <div
+      class="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-brand-600 via-brand-700 to-purple-800 p-12 flex-col justify-between relative overflow-hidden"
+    >
+      <!-- Background decoration -->
+      <div class="absolute top-0 left-0 w-full h-full opacity-10">
+        <div
+          class="absolute top-20 left-20 w-40 h-40 border-2 border-white rounded-full"
+        ></div>
+        <div
+          class="absolute bottom-40 right-20 w-60 h-60 border-2 border-white rounded-full"
+        ></div>
+        <div
+          class="absolute top-1/2 left-1/3 w-20 h-20 border-2 border-white rounded-full"
+        ></div>
+      </div>
+
+      <!-- Logo -->
+      <div class="relative">
+        <a href="/" class="flex items-center space-x-2">
+          <div
+            class="w-10 h-10 bg-white/20 backdrop-blur rounded-xl flex items-center justify-center"
+          >
+            <i data-lucide="brain" class="w-6 h-6 text-white"></i>
+          </div>
+          <span class="text-2xl font-bold text-white">QuizCraft</span>
+        </a>
+      </div>
+
+      <!-- Content -->
+      <div class="relative">
+        <div
+          class="inline-flex items-center px-3 py-1 rounded-full bg-white/10 border border-white/20 mb-6"
+        >
+          <i data-lucide="graduation-cap" class="w-4 h-4 mr-2"></i>
+          <span class="text-sm">Teacher Account</span>
+        </div>
+
+        <h1 class="text-4xl font-bold text-white mb-4">
+          Start creating amazing quizzes
+        </h1>
+        <p class="text-brand-100 text-lg max-w-md">
+          Join thousands of educators who use QuizCraft to engage their students
+          with interactive assessments.
+        </p>
+
+        <!-- Stats -->
+        <div class="mt-8 grid grid-cols-3 gap-6">
+          <div>
+            <div class="text-3xl font-bold text-white">10K+</div>
+            <div class="text-sm text-white/60">Teachers</div>
+          </div>
+          <div>
+            <div class="text-3xl font-bold text-white">50K+</div>
+            <div class="text-sm text-white/60">Quizzes</div>
+          </div>
+          <div>
+            <div class="text-3xl font-bold text-white">1M+</div>
+            <div class="text-sm text-white/60">Attempts</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="relative text-white/60 text-sm">
+        © 2024 QuizCraft. All rights reserved.
+      </div>
+    </div>
+
+    <!-- Right Side - Registration Form -->
+    <div
+      class="w-full lg:w-1/2 flex items-center justify-center p-8 overflow-y-auto"
+    >
+      <div class="w-full max-w-md py-8">
+        <!-- Mobile Logo -->
+        <div class="lg:hidden mb-8 text-center">
+          <a href="/" class="inline-flex items-center space-x-2">
+            <div
+              class="w-10 h-10 bg-brand-500 rounded-xl flex items-center justify-center"
+            >
+              <i data-lucide="brain" class="w-6 h-6 text-white"></i>
+            </div>
+            <span class="text-2xl font-bold"
+              >Quiz<span class="text-brand-400">Craft</span></span
+            >
+          </a>
+        </div>
+
+        <!-- Header -->
+        <div class="text-center mb-8">
+          <div
+            class="inline-flex items-center justify-center w-16 h-16 bg-brand-500/10 border border-brand-500/20 rounded-2xl mb-4"
+          >
+            <i data-lucide="graduation-cap" class="w-8 h-8 text-brand-400"></i>
+          </div>
+          <h2 class="text-2xl font-bold mb-2">Create Teacher Account</h2>
+          <p class="text-zinc-400">Fill in your details to get started</p>
+        </div>
+
+        <!-- Registration Form -->
+        <form id="registerForm" class="space-y-5">
+          <!-- Error Message -->
+          <div
+            id="errorMessage"
+            class="hidden p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm"
+          >
+            <div class="flex items-center gap-2">
+              <i data-lucide="alert-circle" class="w-4 h-4"></i>
+              <span id="errorText">Registration failed</span>
+            </div>
+          </div>
+
+          <!-- Success Message -->
+          <div
+            id="successMessage"
+            class="hidden p-4 bg-green-500/10 border border-green-500/20 rounded-xl text-green-400 text-sm"
+          >
+            <div class="flex items-center gap-2">
+              <i data-lucide="check-circle" class="w-4 h-4"></i>
+              <span>Account created successfully! Redirecting...</span>
+            </div>
+          </div>
+
+          <!-- Name -->
+          <div>
+            <label
+              for="name"
+              class="block text-sm font-medium text-zinc-300 mb-2"
+              >Full Name</label
+            >
+            <div class="relative">
+              <div
+                class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"
+              >
+                <i data-lucide="user" class="w-5 h-5 text-zinc-500"></i>
+              </div>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                required
+                minlength="2"
+                class="form-input pl-12"
+                placeholder="John Doe"
+              />
+            </div>
+          </div>
+
+          <!-- Email -->
+          <div>
+            <label
+              for="email"
+              class="block text-sm font-medium text-zinc-300 mb-2"
+              >Email address</label
+            >
+            <div class="relative">
+              <div
+                class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"
+              >
+                <i data-lucide="mail" class="w-5 h-5 text-zinc-500"></i>
+              </div>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                required
+                class="form-input pl-12"
+                placeholder="you@school.edu"
+              />
+            </div>
+          </div>
+
+          <!-- Institution -->
+          <div>
+            <label
+              for="institution"
+              class="block text-sm font-medium text-zinc-300 mb-2"
+              >Institution / School Name</label
+            >
+            <div class="relative">
+              <div
+                class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"
+              >
+                <i data-lucide="building" class="w-5 h-5 text-zinc-500"></i>
+              </div>
+              <input
+                type="text"
+                id="institution"
+                name="institution"
+                required
+                class="form-input pl-12"
+                placeholder="City High School"
+              />
+            </div>
+          </div>
+
+          <!-- Password -->
+          <div>
+            <label
+              for="password"
+              class="block text-sm font-medium text-zinc-300 mb-2"
+              >Password</label
+            >
+            <div class="relative">
+              <div
+                class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"
+              >
+                <i data-lucide="lock" class="w-5 h-5 text-zinc-500"></i>
+              </div>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                required
+                minlength="6"
+                class="form-input pl-12 pr-12"
+                placeholder="••••••••"
+              />
+              <button
+                type="button"
+                id="togglePassword"
+                class="absolute inset-y-0 right-0 pr-4 flex items-center text-zinc-500 hover:text-zinc-300"
+              >
+                <i data-lucide="eye" class="w-5 h-5"></i>
+              </button>
+            </div>
+            <p class="text-xs text-zinc-500 mt-1">
+              At least 6 characters with 1 number
+            </p>
+          </div>
+
+          <!-- Confirm Password -->
+          <div>
+            <label
+              for="confirmPassword"
+              class="block text-sm font-medium text-zinc-300 mb-2"
+              >Confirm Password</label
+            >
+            <div class="relative">
+              <div
+                class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"
+              >
+                <i data-lucide="lock" class="w-5 h-5 text-zinc-500"></i>
+              </div>
+              <input
+                type="password"
+                id="confirmPassword"
+                name="confirmPassword"
+                required
+                class="form-input pl-12"
+                placeholder="••••••••"
+              />
+            </div>
+          </div>
+
+          <!-- Terms -->
+          <div class="flex items-start gap-3">
+            <input
+              type="checkbox"
+              id="terms"
+              required
+              class="form-checkbox mt-1"
+            />
+            <label for="terms" class="text-sm text-zinc-400">
+              I agree to the
+              <a href="#" class="text-brand-400 hover:text-brand-300"
+                >Terms of Service</a
+              >
+              and
+              <a href="#" class="text-brand-400 hover:text-brand-300"
+                >Privacy Policy</a
+              >
+            </label>
+          </div>
+
+          <!-- Submit Button -->
+          <button
+            type="submit"
+            id="submitBtn"
+            class="btn-shine w-full py-3 bg-brand-500 hover:bg-brand-600 text-white font-semibold rounded-xl transition-all flex items-center justify-center gap-2"
+          >
+            <span>Create Account</span>
+            <i data-lucide="arrow-right" class="w-5 h-5"></i>
+          </button>
+        </form>
+
+        <!-- Divider -->
+        <div class="relative my-8">
+          <div class="absolute inset-0 flex items-center">
+            <div class="w-full border-t border-zinc-800"></div>
+          </div>
+          <div class="relative flex justify-center text-sm">
+            <span class="px-4 bg-zinc-950 text-zinc-500"
+              >Already have an account?</span
+            >
+          </div>
+        </div>
+
+        <!-- Login Link -->
+        <a
+          href="/login.html"
+          class="block w-full p-3 bg-zinc-900 border border-zinc-800 rounded-xl text-center hover:border-zinc-700 transition-colors"
+        >
+          <span class="font-medium">Sign in instead</span>
+        </a>
+
+        <!-- Admin Link -->
+        <div class="mt-4 text-center">
+          <a
+            href="/register-admin.html"
+            class="text-sm text-zinc-500 hover:text-zinc-300 transition-colors"
+          >
+            Want to register as an Administrator?
+          </a>
+        </div>
+
+        <!-- Back to Home -->
+        <div class="mt-6 text-center">
+          <a
+            href="/"
+            class="inline-flex items-center gap-2 text-sm text-zinc-500 hover:text-zinc-300 transition-colors"
+          >
+            <i data-lucide="arrow-left" class="w-4 h-4"></i>
+            Back to home
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Initialize Lucide Icons -->
+    <script>
+      lucide.createIcons();
+
+      // Toggle password visibility
+      const togglePassword = document.getElementById("togglePassword");
+      const passwordInput = document.getElementById("password");
+
+      togglePassword.addEventListener("click", () => {
+        const type = passwordInput.type === "password" ? "text" : "password";
+        passwordInput.type = type;
+
+        const icon = togglePassword.querySelector("i");
+        icon.setAttribute(
+          "data-lucide",
+          type === "password" ? "eye" : "eye-off",
+        );
+        lucide.createIcons();
+      });
+
+      // Form submission
+      const registerForm = document.getElementById("registerForm");
+      const errorMessage = document.getElementById("errorMessage");
+      const errorText = document.getElementById("errorText");
+      const successMessage = document.getElementById("successMessage");
+      const submitBtn = document.getElementById("submitBtn");
+
+      registerForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        // Get form data
+        const name = document.getElementById("name").value;
+        const email = document.getElementById("email").value;
+        const institution = document.getElementById("institution").value;
+        const password = document.getElementById("password").value;
+        const confirmPassword =
+          document.getElementById("confirmPassword").value;
+
+        // Validate passwords match
+        if (password !== confirmPassword) {
+          errorText.textContent = "Passwords do not match";
+          errorMessage.classList.remove("hidden");
+          return;
+        }
+
+        // Hide any previous messages
+        errorMessage.classList.add("hidden");
+        successMessage.classList.add("hidden");
+
+        // Show loading state
+        submitBtn.disabled = true;
+        submitBtn.innerHTML =
+          '<div class="spinner"></div><span class="ml-2">Creating account...</span>';
+
+        try {
+          const response = await fetch("/api/auth/register", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            credentials: "include", // Important: Include cookies in request
+            body: JSON.stringify({
+              name,
+              email,
+              password,
+              role: "teacher",
+              institution,
+            }),
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            // Show detailed error message
+            let errorMsg = data.error || "Registration failed";
+            if (data.details && Array.isArray(data.details)) {
+              errorMsg += ": " + data.details.join(", ");
+            } else if (data.details) {
+              errorMsg += ": " + data.details;
+            }
+            throw new Error(errorMsg);
+          }
+
+          // Show success
+          successMessage.classList.remove("hidden");
+
+          // Store user info in localStorage for quick access (session is in cookie)
+          localStorage.setItem("user", JSON.stringify(data.user));
+
+          // Redirect to dashboard (session is automatically set via cookie)
+          setTimeout(() => {
+            window.location.href = "/dashboard.html";
+          }, 1500);
+        } catch (error) {
+          // Show error
+          console.error("Registration error:", error);
+          errorText.textContent = error.message;
+          errorMessage.classList.remove("hidden");
+
+          // Reset button
+          submitBtn.disabled = false;
+          submitBtn.innerHTML =
+            '<span>Create Account</span><i data-lucide="arrow-right" class="w-5 h-5"></i>';
+          lucide.createIcons();
+        }
+      });
+    </script>
+  </body>
+</html>

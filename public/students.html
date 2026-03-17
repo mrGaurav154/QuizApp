@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Students - QuizCraft" />
+  <title>Students - QuizCraft</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts - Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="/css/styles.css" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ["Inter", "system-ui", "sans-serif"],
+          },
+          colors: {
+            brand: {
+              50: "#eef2ff",
+              100: "#e0e7ff",
+              200: "#c7d2fe",
+              300: "#a5b4fc",
+              400: "#818cf8",
+              500: "#6366f1",
+              600: "#4f46e5",
+              700: "#4338ca",
+              800: "#3730a3",
+              900: "#312e81",
+            },
+          },
+        },
+      },
+    };
+  </script>
+</head>
+
+<body class="font-sans bg-zinc-950 text-zinc-100 antialiased min-h-screen flex flex-col md:flex-row">
+  <!-- Mobile Header -->
+  <div id="mobile-header"
+    class="md:hidden flex items-center justify-between p-4 bg-zinc-900 border-b border-zinc-800 sticky top-0 z-30">
+    <div class="flex items-center gap-2">
+      <div class="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center">
+        <i data-lucide="brain" class="w-5 h-5 text-white"></i>
+      </div>
+      <span class="text-lg font-bold">Quiz<span class="text-brand-400">Craft</span></span>
+    </div>
+    <button onclick="toggleSidebar()"
+      class="p-2 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-800 transition-colors">
+      <i data-lucide="menu" class="w-6 h-6"></i>
+    </button>
+  </div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar"
+    class="fixed inset-y-0 left-0 z-50 w-64 bg-zinc-900 border-r border-zinc-800 p-4 flex flex-col transform -translate-x-full transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:h-screen">
+    <!-- Logo (Desktop only) -->
+    <a href="/" class="hidden md:flex items-center space-x-2 mb-8">
+      <div class="w-10 h-10 bg-brand-500 rounded-xl flex items-center justify-center">
+        <i data-lucide="brain" class="w-6 h-6 text-white"></i>
+      </div>
+      <span class="text-xl font-bold">Quiz<span class="text-brand-400">Craft</span></span>
+    </a>
+
+    <!-- Mobile Close Button -->
+    <div class="md:hidden flex justify-end mb-4">
+      <button onclick="toggleSidebar()" class="p-2 text-zinc-400 hover:text-white">
+        <i data-lucide="x" class="w-6 h-6"></i>
+      </button>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="flex-1 space-y-1">
+      <a href="/dashboard.html"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors">
+        <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+        <span>Dashboard</span>
+      </a>
+      <a href="/quizzes.html"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors">
+        <i data-lucide="file-question" class="w-5 h-5"></i>
+        <span>My Quizzes</span>
+      </a>
+      <a href="/create-quiz.html"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors">
+        <i data-lucide="plus-circle" class="w-5 h-5"></i>
+        <span>Create Quiz</span>
+      </a>
+      <a href="/results.html"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors">
+        <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+        <span>Results</span>
+      </a>
+      <a href="/students.html"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl bg-brand-500/10 text-brand-400 border border-brand-500/20">
+        <i data-lucide="users" class="w-5 h-5"></i>
+        <span class="font-medium">Students</span>
+      </a>
+    </nav>
+
+    <!-- User Profile -->
+    <div class="border-t border-zinc-800 pt-4 mt-4">
+      <div class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-zinc-800 cursor-pointer transition-colors">
+        <div class="w-10 h-10 bg-brand-500 rounded-full flex items-center justify-center">
+          <span id="userInitial" class="font-semibold text-white">T</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p id="userName" class="font-medium truncate">Teacher</p>
+          <p class="text-xs text-zinc-500">Teacher</p>
+        </div>
+        <button id="logoutBtn" class="text-zinc-500 hover:text-red-400 transition-colors">
+          <i data-lucide="log-out" class="w-5 h-5"></i>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 p-4 md:p-8 w-full md:w-auto overflow-y-auto">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h1 class="text-3xl font-bold mb-2">Students</h1>
+        <p class="text-zinc-400">
+          View and manage students who have taken your quizzes
+        </p>
+      </div>
+      <button class="flex items-center gap-2 px-5 py-3 bg-brand-500 hover:bg-brand-600 rounded-xl transition-colors">
+        <i data-lucide="mail" class="w-5 h-5"></i>
+        Invite Students
+      </button>
+    </div>
+
+    <!-- Search & Filters -->
+    <div class="flex flex-wrap gap-4 mb-6">
+      <div class="flex-1 min-w-[300px]">
+        <div class="relative">
+          <i data-lucide="search" class="w-5 h-5 text-zinc-500 absolute left-4 top-1/2 -translate-y-1/2"></i>
+          <input type="text" id="searchInput"
+            class="w-full pl-12 pr-4 py-3 bg-zinc-900 border border-zinc-800 rounded-xl focus:border-brand-500 outline-none transition-colors"
+            placeholder="Search students..." />
+        </div>
+      </div>
+      <select
+        class="px-4 py-3 bg-zinc-900 border border-zinc-800 rounded-xl focus:border-brand-500 outline-none transition-colors">
+        <option value="all">All Performance</option>
+        <option value="excellent">Excellent (90%+)</option>
+        <option value="good">Good (70-89%)</option>
+        <option value="average">Average (50-69%)</option>
+        <option value="poor">Needs Improvement (&lt;50%)</option>
+      </select>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 bg-brand-500/10 rounded-xl flex items-center justify-center">
+            <i data-lucide="users" class="w-6 h-6 text-brand-400"></i>
+          </div>
+          <div>
+            <p class="text-3xl font-bold">156</p>
+            <p class="text-zinc-500 text-sm">Total Students</p>
+          </div>
+        </div>
+      </div>
+      <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 bg-green-500/10 rounded-xl flex items-center justify-center">
+            <i data-lucide="user-check" class="w-6 h-6 text-green-400"></i>
+          </div>
+          <div>
+            <p class="text-3xl font-bold">89</p>
+            <p class="text-zinc-500 text-sm">Active This Week</p>
+          </div>
+        </div>
+      </div>
+      <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 bg-amber-500/10 rounded-xl flex items-center justify-center">
+            <i data-lucide="trending-up" class="w-6 h-6 text-amber-400"></i>
+          </div>
+          <div>
+            <p class="text-3xl font-bold">78%</p>
+            <p class="text-zinc-500 text-sm">Avg. Performance</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Students Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Student Card 1 -->
+      <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 hover:border-zinc-700 transition-colors">
+        <div class="flex items-start justify-between mb-4">
+          <div class="flex items-center gap-4">
+            <div class="w-14 h-14 bg-brand-500 rounded-full flex items-center justify-center">
+              <span class="text-xl font-semibold">JD</span>
+            </div>
+            <div>
+              <h3 class="font-semibold">John Doe</h3>
+              <p class="text-sm text-zinc-500">john.doe@email.com</p>
+            </div>
+          </div>
+          <button class="p-2 hover:bg-zinc-800 rounded-lg transition-colors">
+            <i data-lucide="more-vertical" class="w-4 h-4 text-zinc-400"></i>
+          </button>
+        </div>
+        <div class="space-y-3">
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-zinc-500">Quizzes Taken</span>
+            <span class="font-medium">12</span>
+          </div>
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-zinc-500">Average Score</span>
+            <span class="font-medium text-green-400">85%</span>
+          </div>
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-zinc-500">Last Active</span>
+            <span class="font-medium">Today</span>
+          </div>
+        </div>
+        <div class="mt-4 pt-4 border-t border-zinc-800">
+          <div class="flex items-center gap-2">
+            <div class="flex-1 bg-zinc-800 rounded-full h-2">
+              <div class="bg-green-500 h-2 rounded-full" style="width: 85%"></div>
+            </div>
+            <span class="text-xs text-zinc-500">85%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Student Card 2 -->
+      <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 hover:border-zinc-700 transition-colors">
+        <div class="flex items-start justify-between mb-4">
+          <div class="flex items-center gap-4">
+            <div class="w-14 h-14 bg-purple-500 rounded-full flex items-center justify-center">
+              <span class="text-xl font-semibold">SJ</span>
+            </div>
+            <div>
+              <h3 class="font-semibold">Sarah Johnson</h3>
+              <p class="text-sm text-zinc-500">sarah.j@email.com</p>
+            </div>
+          </div>
+          <button class="p-2 hover:bg-zinc-800 rounded-lg transition-colors">
+            <i data-lucide="more-vertical" class="w-4 h-4 text-zinc-400"></i>
+          </button>
+        </div>
+        <div class="space-y-3">
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-zinc-500">Quizzes Taken</span>
+            <span class="font-medium">18</span>
+          </div>
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-zinc-500">Average Score</span>
+            <span class="font-medium text-green-400">92%</span>
+          </div>
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-zinc-500">Last Active</span>
+            <span class="font-medium">Yesterday</span>
+          </div>
+        </div>
+        <div class="mt-4 pt-4 border-t border-zinc-800">
+          <div class="flex items-center gap-2">
+            <div class="flex-1 bg-zinc-800 rounded-full h-2">
+              <div class="bg-green-500 h-2 rounded-full" style="width: 92%"></div>
+            </div>
+            <span class="text-xs text-zinc-500">92%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Student Card 3 -->
+      <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 hover:border-zinc-700 transition-colors">
+        <div class="flex items-start justify-between mb-4">
+          <div class="flex items-center gap-4">
+            <div class="w-14 h-14 bg-amber-500 rounded-full flex items-center justify-center">
+              <span class="text-xl font-semibold">MK</span>
+            </div>
+            <div>
+              <h3 class="font-semibold">Mike Kim</h3>
+              <p class="text-sm text-zinc-500">mike.k@email.com</p>
+            </div>
+          </div>
+          <button class="p-2 hover:bg-zinc-800 rounded-lg transition-colors">
+            <i data-lucide="more-vertical" class="w-4 h-4 text-zinc-400"></i>
+          </button>
+        </div>
+        <div class="space-y-3">
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-zinc-500">Quizzes Taken</span>
+            <span class="font-medium">8</span>
+          </div>
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-zinc-500">Average Score</span>
+            <span class="font-medium text-amber-400">65%</span>
+          </div>
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-zinc-500">Last Active</span>
+            <span class="font-medium">2 days ago</span>
+          </div>
+        </div>
+        <div class="mt-4 pt-4 border-t border-zinc-800">
+          <div class="flex items-center gap-2">
+            <div class="flex-1 bg-zinc-800 rounded-full h-2">
+              <div class="bg-amber-500 h-2 rounded-full" style="width: 65%"></div>
+            </div>
+            <span class="text-xs text-zinc-500">65%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Student Card 4 -->
+      <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 hover:border-zinc-700 transition-colors">
+        <div class="flex items-start justify-between mb-4">
+          <div class="flex items-center gap-4">
+            <div class="w-14 h-14 bg-green-500 rounded-full flex items-center justify-center">
+              <span class="text-xl font-semibold">EW</span>
+            </div>
+            <div>
+              <h3 class="font-semibold">Emily Wilson</h3>
+              <p class="text-sm text-zinc-500">emily.w@email.com</p>
+            </div>
+          </div>
+          <button class="p-2 hover:bg-zinc-800 rounded-lg transition-colors">
+            <i data-lucide="more-vertical" class="w-4 h-4 text-zinc-400"></i>
+          </button>
+        </div>
+        <div class="space-y-3">
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-zinc-500">Quizzes Taken</span>
+            <span class="font-medium">15</span>
+          </div>
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-zinc-500">Average Score</span>
+            <span class="font-medium text-green-400">88%</span>
+          </div>
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-zinc-500">Last Active</span>
+            <span class="font-medium">Today</span>
+          </div>
+        </div>
+        <div class="mt-4 pt-4 border-t border-zinc-800">
+          <div class="flex items-center gap-2">
+            <div class="flex-1 bg-zinc-800 rounded-full h-2">
+              <div class="bg-green-500 h-2 rounded-full" style="width: 88%"></div>
+            </div>
+            <span class="text-xs text-zinc-500">88%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Student Card 5 -->
+      <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 hover:border-zinc-700 transition-colors">
+        <div class="flex items-start justify-between mb-4">
+          <div class="flex items-center gap-4">
+            <div class="w-14 h-14 bg-blue-500 rounded-full flex items-center justify-center">
+              <span class="text-xl font-semibold">AC</span>
+            </div>
+            <div>
+              <h3 class="font-semibold">Alex Chen</h3>
+              <p class="text-sm text-zinc-500">alex.c@email.com</p>
+            </div>
+          </div>
+          <button class="p-2 hover:bg-zinc-800 rounded-lg transition-colors">
+            <i data-lucide="more-vertical" class="w-4 h-4 text-zinc-400"></i>
+          </button>
+        </div>
+        <div class="space-y-3">
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-zinc-500">Quizzes Taken</span>
+            <span class="font-medium">10</span>
+          </div>
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-zinc-500">Average Score</span>
+            <span class="font-medium text-green-400">79%</span>
+          </div>
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-zinc-500">Last Active</span>
+            <span class="font-medium">3 days ago</span>
+          </div>
+        </div>
+        <div class="mt-4 pt-4 border-t border-zinc-800">
+          <div class="flex items-center gap-2">
+            <div class="flex-1 bg-zinc-800 rounded-full h-2">
+              <div class="bg-green-500 h-2 rounded-full" style="width: 79%"></div>
+            </div>
+            <span class="text-xs text-zinc-500">79%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Student Card 6 -->
+      <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 hover:border-zinc-700 transition-colors">
+        <div class="flex items-start justify-between mb-4">
+          <div class="flex items-center gap-4">
+            <div class="w-14 h-14 bg-red-500 rounded-full flex items-center justify-center">
+              <span class="text-xl font-semibold">RP</span>
+            </div>
+            <div>
+              <h3 class="font-semibold">Ryan Park</h3>
+              <p class="text-sm text-zinc-500">ryan.p@email.com</p>
+            </div>
+          </div>
+          <button class="p-2 hover:bg-zinc-800 rounded-lg transition-colors">
+            <i data-lucide="more-vertical" class="w-4 h-4 text-zinc-400"></i>
+          </button>
+        </div>
+        <div class="space-y-3">
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-zinc-500">Quizzes Taken</span>
+            <span class="font-medium">5</span>
+          </div>
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-zinc-500">Average Score</span>
+            <span class="font-medium text-red-400">45%</span>
+          </div>
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-zinc-500">Last Active</span>
+            <span class="font-medium">1 week ago</span>
+          </div>
+        </div>
+        <div class="mt-4 pt-4 border-t border-zinc-800">
+          <div class="flex items-center gap-2">
+            <div class="flex-1 bg-zinc-800 rounded-full h-2">
+              <div class="bg-red-500 h-2 rounded-full" style="width: 45%"></div>
+            </div>
+            <span class="text-xs text-zinc-500">45%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Auth Utilities -->
+  <script src="/js/auth.js"></script>
+  <script src="/js/mobile-nav.js"></script>
+
+  <!-- Students Dashboard Script -->
+  <script src="/js/students.js"></script>
+
+  <!-- Initialize Lucide Icons -->
+  <script>
+    lucide.createIcons();
+
+    // Initialize authentication
+    initAuth();
+  </script>
+</body>
+
+</html>

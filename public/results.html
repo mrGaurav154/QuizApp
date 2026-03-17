@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Quiz Results - QuizCraft" />
+  <title>Results - QuizCraft</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts - Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="/css/styles.css" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ["Inter", "system-ui", "sans-serif"],
+          },
+          colors: {
+            brand: {
+              50: "#eef2ff",
+              100: "#e0e7ff",
+              200: "#c7d2fe",
+              300: "#a5b4fc",
+              400: "#818cf8",
+              500: "#6366f1",
+              600: "#4f46e5",
+              700: "#4338ca",
+              800: "#3730a3",
+              900: "#312e81",
+            },
+          },
+        },
+      },
+    };
+  </script>
+</head>
+
+<body class="font-sans bg-zinc-950 text-zinc-100 antialiased min-h-screen flex flex-col md:flex-row">
+  <!-- Mobile Header -->
+  <div id="mobile-header"
+    class="md:hidden flex items-center justify-between p-4 bg-zinc-900 border-b border-zinc-800 sticky top-0 z-30">
+    <div class="flex items-center gap-2">
+      <div class="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center">
+        <i data-lucide="brain" class="w-5 h-5 text-white"></i>
+      </div>
+      <span class="text-lg font-bold">Quiz<span class="text-brand-400">Craft</span></span>
+    </div>
+    <button onclick="toggleSidebar()"
+      class="p-2 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-800 transition-colors">
+      <i data-lucide="menu" class="w-6 h-6"></i>
+    </button>
+  </div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar"
+    class="fixed inset-y-0 left-0 z-50 w-64 bg-zinc-900 border-r border-zinc-800 p-4 flex flex-col transform -translate-x-full transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:h-screen">
+    <!-- Logo (Desktop only) -->
+    <a href="/" class="hidden md:flex items-center space-x-2 mb-8">
+      <div class="w-10 h-10 bg-brand-500 rounded-xl flex items-center justify-center">
+        <i data-lucide="brain" class="w-6 h-6 text-white"></i>
+      </div>
+      <span class="text-xl font-bold">Quiz<span class="text-brand-400">Craft</span></span>
+    </a>
+
+    <!-- Mobile Close Button -->
+    <div class="md:hidden flex justify-end mb-4">
+      <button onclick="toggleSidebar()" class="p-2 text-zinc-400 hover:text-white">
+        <i data-lucide="x" class="w-6 h-6"></i>
+      </button>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="flex-1 space-y-1">
+      <a href="/dashboard.html"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors">
+        <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+        <span>Dashboard</span>
+      </a>
+      <a href="/quizzes.html"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors">
+        <i data-lucide="file-question" class="w-5 h-5"></i>
+        <span>My Quizzes</span>
+      </a>
+      <a href="/create-quiz.html"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors">
+        <i data-lucide="plus-circle" class="w-5 h-5"></i>
+        <span>Create Quiz</span>
+      </a>
+      <a href="/results.html"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl bg-brand-500/10 text-brand-400 border border-brand-500/20">
+        <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+        <span class="font-medium">Results</span>
+      </a>
+      <a href="/students.html"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors">
+        <i data-lucide="users" class="w-5 h-5"></i>
+        <span>Students</span>
+      </a>
+    </nav>
+
+    <!-- User Profile -->
+    <div class="border-t border-zinc-800 pt-4 mt-4">
+      <div class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-zinc-800 cursor-pointer transition-colors">
+        <div class="w-10 h-10 bg-brand-500 rounded-full flex items-center justify-center">
+          <span id="userInitial" class="font-semibold text-white">T</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p id="userName" class="font-medium truncate">Teacher</p>
+          <p class="text-xs text-zinc-500">Teacher</p>
+        </div>
+        <button id="logoutBtn" class="text-zinc-500 hover:text-red-400 transition-colors">
+          <i data-lucide="log-out" class="w-5 h-5"></i>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 p-4 md:p-8 w-full md:w-auto overflow-y-auto">
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold mb-2">Quiz Results</h1>
+      <p class="text-zinc-400">View and analyze student performance</p>
+    </div>
+
+    <!-- Stats Overview -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+        <div class="flex items-center justify-between mb-4">
+          <div class="w-12 h-12 bg-brand-500/10 rounded-xl flex items-center justify-center">
+            <i data-lucide="users" class="w-6 h-6 text-brand-400"></i>
+          </div>
+        </div>
+        <p class="text-3xl font-bold mb-1" id="totalAttempts">0</p>
+        <p class="text-zinc-500 text-sm">Total Attempts</p>
+      </div>
+
+      <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+        <div class="flex items-center justify-between mb-4">
+          <div class="w-12 h-12 bg-green-500/10 rounded-xl flex items-center justify-center">
+            <i data-lucide="check-circle" class="w-6 h-6 text-green-400"></i>
+          </div>
+        </div>
+        <p class="text-3xl font-bold mb-1" id="avgScore">0%</p>
+        <p class="text-zinc-500 text-sm">Average Score</p>
+      </div>
+
+      <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+        <div class="flex items-center justify-between mb-4">
+          <div class="w-12 h-12 bg-amber-500/10 rounded-xl flex items-center justify-center">
+            <i data-lucide="trophy" class="w-6 h-6 text-amber-400"></i>
+          </div>
+        </div>
+        <p class="text-3xl font-bold mb-1" id="highScore">0%</p>
+        <p class="text-zinc-500 text-sm">Highest Score</p>
+      </div>
+
+      <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+        <div class="flex items-center justify-between mb-4">
+          <div class="w-12 h-12 bg-purple-500/10 rounded-xl flex items-center justify-center">
+            <i data-lucide="percent" class="w-6 h-6 text-purple-400"></i>
+          </div>
+        </div>
+        <p class="text-3xl font-bold mb-1" id="passRate">0%</p>
+        <p class="text-zinc-500 text-sm">Pass Rate</p>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="flex flex-wrap gap-4 mb-6">
+      <select id="quizFilter"
+        class="px-4 py-3 bg-zinc-900 border border-zinc-800 rounded-xl focus:border-brand-500 outline-none transition-colors">
+        <option value="all">All Quizzes</option>
+      </select>
+      <select id="timeFilter"
+        class="px-4 py-3 bg-zinc-900 border border-zinc-800 rounded-xl focus:border-brand-500 outline-none transition-colors">
+        <option value="all">All Time</option>
+        <option value="today">Today</option>
+        <option value="week">This Week</option>
+        <option value="month">This Month</option>
+      </select>
+      <button class="px-4 py-3 bg-zinc-800 hover:bg-zinc-700 rounded-xl transition-colors flex items-center gap-2">
+        <i data-lucide="download" class="w-4 h-4"></i>
+        Export Results
+      </button>
+    </div>
+
+    <!-- Results Table -->
+    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="border-b border-zinc-800">
+              <th class="text-left px-6 py-4 text-sm font-medium text-zinc-400">
+                Student
+              </th>
+              <th class="text-left px-6 py-4 text-sm font-medium text-zinc-400">
+                Quiz
+              </th>
+              <th class="text-left px-6 py-4 text-sm font-medium text-zinc-400">
+                Score
+              </th>
+              <th class="text-left px-6 py-4 text-sm font-medium text-zinc-400">
+                Status
+              </th>
+              <th class="text-left px-6 py-4 text-sm font-medium text-zinc-400">
+                Time Taken
+              </th>
+              <th class="text-left px-6 py-4 text-sm font-medium text-zinc-400">
+                Date
+              </th>
+              <th class="text-right px-6 py-4 text-sm font-medium text-zinc-400">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody id="resultsTableBody" class="divide-y divide-zinc-800">
+            <tr>
+              <td colspan="7" class="px-6 py-8 text-center text-zinc-500">
+                <i data-lucide="loader" class="w-6 h-6 animate-spin mx-auto mb-2"></i>
+                <p>Loading results...</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="border-t border-zinc-800 px-6 py-4 flex items-center justify-between">
+        <p class="text-sm text-zinc-500" id="paginationInfo">Showing 0 results</p>
+        <div class="flex items-center gap-2">
+          <button class="px-3 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors disabled:opacity-50"
+            disabled>
+            <i data-lucide="chevron-left" class="w-4 h-4"></i>
+          </button>
+          <button class="px-3 py-2 bg-brand-500 rounded-lg">1</button>
+          <button class="px-3 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors">
+            2
+          </button>
+          <button class="px-3 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors">
+            3
+          </button>
+          <span class="text-zinc-500">...</span>
+          <button class="px-3 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors">
+            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Auth Utilities -->
+  <script src="/js/auth.js"></script>
+  <script src="/js/mobile-nav.js"></script>
+
+  <!-- Initialize Lucide Icons -->
+  <script>
+    lucide.createIcons();
+
+    let allResults = [];
+    let currentUser = null;
+    let allQuizzes = [];
+
+    // Initialize page
+    async function initPage() {
+      currentUser = await initAuth();
+      if (currentUser) {
+        await loadResults();
+      }
+    }
+
+    // Load all results from database
+    async function loadResults() {
+      try {
+        console.log("📊 Fetching results from database...");
+
+        const response = await fetch("/api/results/teacher/stats", {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json"
+          }
+        });
+
+        console.log("📊 Response status:", response.status);
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.message || "Failed to load results");
+        }
+
+        const data = await response.json();
+        console.log("📊 Received data:", data);
+
+        allResults = data.data || [];
+        console.log("📊 Results count:", allResults.length);
+
+        // Update statistics
+        if (data.stats) {
+          document.getElementById("totalAttempts").textContent = data.stats.totalAttempts;
+          document.getElementById("avgScore").textContent = data.stats.averageScore + "%";
+
+          // Calculate highest score
+          const highestScore = allResults.length > 0
+            ? Math.max(...allResults.map(r => r.percentage || 0))
+            : 0;
+          document.getElementById("highScore").textContent = highestScore + "%";
+
+          // Calculate pass rate
+          const passPercentage = 60; // default pass percentage
+          const passedCount = allResults.filter(r => r.percentage >= passPercentage).length;
+          const passRate = allResults.length > 0
+            ? Math.round((passedCount / allResults.length) * 100)
+            : 0;
+          document.getElementById("passRate").textContent = passRate + "%";
+        }
+
+        // Load quizzes for filter dropdown
+        await loadQuizzesForFilter();
+
+        // Display results
+        displayResults(allResults);
+
+      } catch (error) {
+        console.error("❌ Error loading results:", error);
+        const tbody = document.getElementById("resultsTableBody");
+        tbody.innerHTML = `
+            <tr>
+              <td colspan="7" class="px-6 py-8 text-center text-red-500">
+                <i data-lucide="alert-circle" class="w-8 h-8 mx-auto mb-2"></i>
+                <p class="font-semibold">Error loading results</p>
+                <p class="text-sm text-zinc-400 mt-1">${error.message}</p>
+              </td>
+            </tr>
+          `;
+        lucide.createIcons();
+      }
+    }
+
+    // Load quizzes for dropdown filter
+    async function loadQuizzesForFilter() {
+      try {
+        const userId = currentUser._id || currentUser.id;
+        const response = await fetch(`/api/quizzes?teacher=${userId}`, {
+          credentials: "include"
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const quizzes = data.quizzes || [];
+          allQuizzes = quizzes;
+
+          const quizFilter = document.getElementById("quizFilter");
+          quizzes.forEach(quiz => {
+            const option = document.createElement("option");
+            option.value = quiz._id;
+            option.textContent = quiz.title;
+            quizFilter.appendChild(option);
+          });
+        }
+      } catch (error) {
+        console.error("Error loading quizzes:", error);
+      }
+    }
+
+    // Display results in table
+    function displayResults(results) {
+      const tbody = document.getElementById("resultsTableBody");
+
+      if (!results || results.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+              <td colspan="7" class="px-6 py-8 text-center text-zinc-500">
+                <i data-lucide="inbox" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>
+                <p class="font-semibold">No results yet</p>
+                <p class="text-sm mt-1">Student results will appear here after they complete quizzes.</p>
+              </td>
+            </tr>
+          `;
+        document.getElementById("paginationInfo").textContent = "Showing 0 results";
+        lucide.createIcons();
+        return;
+      }
+
+      tbody.innerHTML = results.map((result, index) => {
+        const isPassed = result.percentage >= (result.quiz?.passPercentage || 60);
+        const studentName = result.student?.name || result.user?.name || "Unknown Student";
+        const quizTitle = result.quiz?.title || "Unknown Quiz";
+        const date = new Date(result.completedAt).toLocaleDateString();
+        const timeInMinutes = Math.round(result.timeTaken / 60);
+        const initials = studentName.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
+
+        return `
+            <tr class="hover:bg-zinc-800/50 transition-colors">
+              <td class="px-6 py-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 bg-brand-500 rounded-full flex items-center justify-center flex-shrink-0">
+                    <span class="text-sm font-medium text-white">${initials}</span>
+                  </div>
+                  <span class="font-medium">${studentName}</span>
+                </div>
+              </td>
+              <td class="px-6 py-4 text-zinc-400">${quizTitle}</td>
+              <td class="px-6 py-4">
+                <span class="font-semibold ${isPassed ? "text-green-400" : "text-red-400"}">
+                  ${result.percentage}%
+                </span>
+              </td>
+              <td class="px-6 py-4">
+                <span class="px-2 py-1 ${isPassed ? "bg-green-500/10 text-green-400" : "bg-red-500/10 text-red-400"} text-xs font-medium rounded-full">
+                  ${isPassed ? "Passed" : "Failed"}
+                </span>
+              </td>
+              <td class="px-6 py-4 text-zinc-400">${timeInMinutes} min</td>
+              <td class="px-6 py-4 text-zinc-400">${date}</td>
+              <td class="px-6 py-4 text-right">
+                <button
+                  class="p-2 hover:bg-zinc-700 rounded-lg transition-colors"
+                  onclick="viewResult('${result._id}')"
+                  title="View Details"
+                >
+                  <i data-lucide="eye" class="w-4 h-4 text-zinc-400"></i>
+                </button>
+              </td>
+            </tr>
+          `;
+      }).join("");
+
+      document.getElementById("paginationInfo").textContent =
+        `Showing 1-${results.length} of ${results.length} results`;
+
+      lucide.createIcons();
+    }
+
+    // View individual result
+    window.viewResult = function (resultId) {
+      window.location.href = `/student-result.html?id=${resultId}`;
+    };
+
+    // Quiz filter change event
+    document.getElementById("quizFilter").addEventListener("change", (e) => {
+      const quizId = e.target.value;
+
+      if (quizId === "all") {
+        displayResults(allResults);
+      } else {
+        const filtered = allResults.filter(r => r.quiz?._id === quizId);
+        displayResults(filtered);
+      }
+    });
+
+    // Time filter change event
+    document.getElementById("timeFilter").addEventListener("change", (e) => {
+      const timeFilter = e.target.value;
+      const now = new Date();
+      let filtered = allResults;
+
+      if (timeFilter === "today") {
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        filtered = allResults.filter(r => new Date(r.completedAt) >= today);
+      } else if (timeFilter === "week") {
+        const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        filtered = allResults.filter(r => new Date(r.completedAt) >= weekAgo);
+      } else if (timeFilter === "month") {
+        const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        filtered = allResults.filter(r => new Date(r.completedAt) >= monthAgo);
+      }
+
+      displayResults(filtered);
+    });
+
+    // Initialize page on load
+    initPage();
+  </script>
+</body>
+
+</html>

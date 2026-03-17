@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>All Quizzes - Admin Panel</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="/css/styles.css" />
+  <script>
+    tailwind.config = { theme: { extend: { fontFamily: { sans: ["Inter", "system-ui", "sans-serif"] }, colors: { brand: { 400: "#818cf8", 500: "#6366f1", 600: "#4f46e5" } } } } };
+  </script>
+  <style>
+    #sidebar {
+      transition: transform 0.3s ease-in-out;
+    }
+
+    #sidebar-overlay {
+      transition: opacity 0.3s ease-in-out;
+    }
+  </style>
+</head>
+
+<body class="font-sans bg-zinc-950 text-zinc-100 antialiased min-h-screen">
+
+  <!-- Mobile Header -->
+  <header
+    class="md:hidden sticky top-0 z-30 flex items-center justify-between px-4 py-3 bg-zinc-900 border-b border-zinc-800">
+    <a href="/" class="flex items-center gap-2">
+      <div class="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center">
+        <i data-lucide="shield" class="w-5 h-5 text-white"></i>
+      </div>
+      <span class="text-lg font-bold">Quiz<span class="text-purple-400">Craft</span></span>
+    </a>
+    <button onclick="toggleSidebar()"
+      class="p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors">
+      <i data-lucide="menu" class="w-6 h-6"></i>
+    </button>
+  </header>
+
+  <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 z-40 hidden opacity-0" onclick="toggleSidebar()"></div>
+
+  <aside id="sidebar"
+    class="fixed top-0 left-0 h-full w-64 bg-zinc-900 border-r border-zinc-800 p-4 flex flex-col z-50 -translate-x-full md:translate-x-0">
+    <a href="/" class="hidden md:flex items-center gap-2 mb-8">
+      <div class="w-10 h-10 bg-purple-500 rounded-xl flex items-center justify-center">
+        <i data-lucide="shield" class="w-6 h-6 text-white"></i>
+      </div>
+      <span class="text-xl font-bold">Quiz<span class="text-purple-400">Craft</span></span>
+    </a>
+    <div class="md:hidden flex items-center justify-between mb-6">
+      <span class="text-lg font-bold">Quiz<span class="text-purple-400">Craft</span></span>
+      <button onclick="toggleSidebar()" class="p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+
+    <nav class="flex-1 space-y-1">
+      <a href="/admin/dashboard.html"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors"><i
+          data-lucide="layout-dashboard" class="w-5 h-5"></i><span>Dashboard</span></a>
+      <a href="/admin/users.html"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors"><i
+          data-lucide="users" class="w-5 h-5"></i><span>Manage Users</span></a>
+      <a href="/admin/categories.html"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors"><i
+          data-lucide="folder" class="w-5 h-5"></i><span>Categories</span></a>
+      <a href="/admin/quizzes.html"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20"><i
+          data-lucide="file-question" class="w-5 h-5"></i><span class="font-medium">All Quizzes</span></a>
+      <a href="/admin/analytics.html"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors"><i
+          data-lucide="bar-chart-3" class="w-5 h-5"></i><span>Analytics</span></a>
+    </nav>
+
+    <div class="border-t border-zinc-800 pt-4 mt-4">
+      <div class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-zinc-800 transition-colors">
+        <div class="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
+          <span id="userInitial" class="font-semibold text-white">A</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p id="userName" class="font-medium truncate">Admin</p>
+          <p class="text-xs text-zinc-500">Administrator</p>
+        </div>
+        <button id="logoutBtn" class="text-zinc-500 hover:text-red-400 transition-colors" title="Logout">
+          <i data-lucide="log-out" class="w-5 h-5"></i>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <main class="md:ml-64 p-4 md:p-8 min-h-screen">
+    <div class="mb-6 md:mb-8">
+      <h1 class="text-2xl md:text-3xl font-bold mb-1">All Quizzes</h1>
+      <p class="text-zinc-400 text-sm md:text-base">View and manage all quizzes on the platform</p>
+    </div>
+
+    <div class="flex flex-col sm:flex-row gap-3 mb-6">
+      <div class="flex-1 relative">
+        <i data-lucide="search" class="w-5 h-5 text-zinc-500 absolute left-4 top-1/2 -translate-y-1/2"></i>
+        <input type="text" id="searchInput"
+          class="w-full pl-12 pr-4 py-3 bg-zinc-900 border border-zinc-800 rounded-xl focus:border-purple-500 outline-none transition-colors text-sm"
+          placeholder="Search quizzes..." />
+      </div>
+      <select id="statusFilter"
+        class="px-4 py-3 bg-zinc-900 border border-zinc-800 rounded-xl focus:border-purple-500 outline-none transition-colors text-sm">
+        <option value="all">All Status</option>
+        <option value="published">Published</option>
+        <option value="draft">Draft</option>
+      </select>
+    </div>
+
+    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full min-w-[480px]">
+          <thead>
+            <tr class="border-b border-zinc-800">
+              <th class="text-left px-4 md:px-6 py-4 text-sm font-medium text-zinc-400">Title</th>
+              <th class="text-left px-4 md:px-6 py-4 text-sm font-medium text-zinc-400 hidden sm:table-cell">Teacher
+              </th>
+              <th class="text-left px-4 md:px-6 py-4 text-sm font-medium text-zinc-400 hidden md:table-cell">Category
+              </th>
+              <th class="text-left px-4 md:px-6 py-4 text-sm font-medium text-zinc-400 hidden md:table-cell">Qs</th>
+              <th class="text-left px-4 md:px-6 py-4 text-sm font-medium text-zinc-400">Status</th>
+              <th class="text-left px-4 md:px-6 py-4 text-sm font-medium text-zinc-400 hidden sm:table-cell">Attempts
+              </th>
+              <th class="text-right px-4 md:px-6 py-4 text-sm font-medium text-zinc-400">Del</th>
+            </tr>
+          </thead>
+          <tbody id="quizzesTableBody" class="divide-y divide-zinc-800">
+            <tr>
+              <td colspan="7" class="px-6 py-8 text-center text-zinc-500">
+                <i data-lucide="loader" class="w-6 h-6 animate-spin mx-auto mb-2"></i>
+                <p>Loading quizzes...</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <script src="/js/auth.js"></script>
+  <script>
+    function toggleSidebar() {
+      const s = document.getElementById('sidebar'), o = document.getElementById('sidebar-overlay');
+      const open = !s.classList.contains('-translate-x-full');
+      if (open) { s.classList.add('-translate-x-full'); o.classList.add('opacity-0'); setTimeout(() => o.classList.add('hidden'), 300); }
+      else { o.classList.remove('hidden'); requestAnimationFrame(() => requestAnimationFrame(() => { s.classList.remove('-translate-x-full'); o.classList.remove('opacity-0'); })); }
+    }
+    document.querySelectorAll('#sidebar nav a').forEach(l => l.addEventListener('click', () => { if (window.innerWidth < 768) toggleSidebar(); }));
+    window.addEventListener('resize', () => { if (window.innerWidth >= 768) { document.getElementById('sidebar').classList.remove('-translate-x-full'); document.getElementById('sidebar-overlay').classList.add('hidden', 'opacity-0'); } });
+
+    lucide.createIcons();
+    let allQuizzes = [], currentUser = null;
+
+    async function initPage() {
+      currentUser = await initAuth();
+      if (currentUser && currentUser.role === "admin") { await loadQuizzes(); }
+      else { window.location.href = "/admin/dashboard.html"; }
+    }
+
+    async function loadQuizzes() {
+      try {
+        const res = await fetch("/api/quizzes?limit=100", { credentials: "include" });
+        if (!res.ok) throw new Error("Failed to load");
+        allQuizzes = (await res.json()).quizzes || [];
+        displayQuizzes(allQuizzes);
+      } catch (e) {
+        document.getElementById("quizzesTableBody").innerHTML = `<tr><td colspan="7" class="px-6 py-8 text-center text-red-500">Error: ${e.message}</td></tr>`;
+      }
+    }
+
+    function displayQuizzes(quizzes) {
+      const tbody = document.getElementById("quizzesTableBody");
+      if (!quizzes.length) { tbody.innerHTML = `<tr><td colspan="7" class="px-6 py-8 text-center text-zinc-500">No quizzes found</td></tr>`; return; }
+      tbody.innerHTML = quizzes.map(q => `
+        <tr class="hover:bg-zinc-800/50 transition-colors">
+          <td class="px-4 md:px-6 py-4 font-medium text-sm">${q.title}</td>
+          <td class="px-4 md:px-6 py-4 text-zinc-400 text-sm hidden sm:table-cell">${q.createdBy?.name || "Unknown"}</td>
+          <td class="px-4 md:px-6 py-4 text-zinc-400 text-sm hidden md:table-cell">${q.category?.name || "Unknown"}</td>
+          <td class="px-4 md:px-6 py-4 text-zinc-400 text-sm hidden md:table-cell">${q.questionCount || 0}</td>
+          <td class="px-4 md:px-6 py-4"><span class="px-2 py-1 ${q.isPublished ? "bg-green-500/10 text-green-400" : "bg-zinc-700 text-zinc-400"} text-xs font-medium rounded-full">${q.isPublished ? "Published" : "Draft"}</span></td>
+          <td class="px-4 md:px-6 py-4 text-zinc-400 text-sm hidden sm:table-cell">${q.attemptCount || 0}</td>
+          <td class="px-4 md:px-6 py-4 text-right"><button class="p-2 hover:bg-zinc-700 rounded-lg text-red-400" onclick="deleteQuiz('${q._id}','${q.title}')"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td>
+        </tr>`).join("");
+      lucide.createIcons();
+    }
+
+    document.getElementById("searchInput").addEventListener("input", e => displayQuizzes(allQuizzes.filter(q => q.title.toLowerCase().includes(e.target.value.toLowerCase()))));
+    document.getElementById("statusFilter").addEventListener("change", e => { const s = e.target.value; displayQuizzes(s === "all" ? allQuizzes : allQuizzes.filter(q => s === "published" ? q.isPublished : !q.isPublished)); });
+
+    window.deleteQuiz = async function (id, title) {
+      if (!confirm(`Delete quiz "${title}"?`)) return;
+      try {
+        const res = await fetch(`/api/quizzes/${id}`, { method: "DELETE", credentials: "include" });
+        if (!res.ok) throw new Error("Failed to delete");
+        alert("Quiz deleted!"); loadQuizzes();
+      } catch (e) { alert("Error: " + e.message); }
+    };
+
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      try { await fetch("/api/auth/logout", { method: "POST", credentials: "include" }); } catch (e) { }
+      localStorage.removeItem("user"); window.location.href = "/login.html";
+    });
+
+    initPage();
+  </script>
+</body>
+
+</html>

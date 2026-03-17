@@ -1,0 +1,826 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="QuizCraft - Create, share, and manage interactive quizzes. The modern platform for teachers and educators."
+    />
+    <title>QuizCraft - Interactive Quiz Platform for Educators</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts - Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+  <script src="/config.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Inter", "system-ui", "sans-serif"],
+            },
+            colors: {
+              brand: {
+                50: "#eef2ff",
+                100: "#e0e7ff",
+                200: "#c7d2fe",
+                300: "#a5b4fc",
+                400: "#818cf8",
+                500: "#6366f1",
+                600: "#4f46e5",
+                700: "#4338ca",
+                800: "#3730a3",
+                900: "#312e81",
+              },
+            },
+          },
+        },
+      };
+    </script>
+
+    <style>
+      /* Smooth scroll */
+      html {
+        scroll-behavior: smooth;
+      }
+
+      /* Custom animations */
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+
+      @keyframes pulse-soft {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.7;
+        }
+      }
+
+      .animate-float {
+        animation: float 3s ease-in-out infinite;
+      }
+
+      .animate-pulse-soft {
+        animation: pulse-soft 2s ease-in-out infinite;
+      }
+
+      /* Gradient text */
+      .gradient-text {
+        background: linear-gradient(
+          135deg,
+          #6366f1 0%,
+          #8b5cf6 50%,
+          #a855f7 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      /* Glass effect */
+      .glass {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      /* Feature card hover */
+      .feature-card {
+        transition: all 0.3s ease;
+      }
+
+      .feature-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 40px rgba(99, 102, 241, 0.15);
+      }
+
+      /* Button shine effect */
+      .btn-shine {
+        position: relative;
+        overflow: hidden;
+      }
+
+      .btn-shine::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent
+        );
+        transition: left 0.5s;
+      }
+
+      .btn-shine:hover::before {
+        left: 100%;
+      }
+    </style>
+  </head>
+  <body class="font-sans bg-zinc-950 text-zinc-100 antialiased">
+    <!-- Navigation -->
+    <nav
+      class="fixed top-0 left-0 right-0 z-50 bg-zinc-950/80 backdrop-blur-lg border-b border-zinc-800/50"
+    >
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <!-- Logo -->
+          <a href="/" class="flex items-center space-x-2">
+            <div
+              class="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center"
+            >
+              <i data-lucide="brain" class="w-5 h-5 text-white"></i>
+            </div>
+            <span class="text-xl font-bold"
+              >Quiz<span class="text-brand-400">Craft</span></span
+            >
+          </a>
+
+          <!-- Desktop Navigation -->
+          <div class="hidden md:flex items-center space-x-8">
+            <a
+              href="#features"
+              class="text-sm text-zinc-400 hover:text-white transition-colors"
+              >Features</a
+            >
+            <a
+              href="#how-it-works"
+              class="text-sm text-zinc-400 hover:text-white transition-colors"
+              >How it Works</a
+            >
+            <a
+              href="#testimonials"
+              class="text-sm text-zinc-400 hover:text-white transition-colors"
+              >Testimonials</a
+            >
+          </div>
+
+          <!-- Auth Buttons -->
+          <div class="flex items-center space-x-3">
+            <a
+              href="/login.html"
+              class="hidden sm:inline-flex text-sm text-zinc-300 hover:text-white transition-colors px-4 py-2"
+            >
+              Sign In
+            </a>
+            <a
+              href="/register-teacher.html"
+              class="btn-shine inline-flex items-center px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white text-sm font-medium rounded-lg transition-colors"
+            >
+              Get Started
+              <i data-lucide="arrow-right" class="w-4 h-4 ml-2"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section
+      class="relative min-h-screen flex items-center pt-16 overflow-hidden"
+    >
+      <!-- Background gradient -->
+      <div
+        class="absolute inset-0 bg-gradient-to-b from-brand-950/20 via-zinc-950 to-zinc-950"
+      ></div>
+
+      <!-- Animated background shapes -->
+      <div
+        class="absolute top-20 left-10 w-72 h-72 bg-brand-500/10 rounded-full blur-3xl animate-pulse-soft"
+      ></div>
+      <div
+        class="absolute bottom-20 right-10 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse-soft"
+        style="animation-delay: 1s"
+      ></div>
+
+      <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div class="grid lg:grid-cols-2 gap-12 items-center">
+          <!-- Left Content -->
+          <div class="text-center lg:text-left">
+            <!-- Badge -->
+            <div
+              class="inline-flex items-center px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/20 mb-6"
+            >
+              <span
+                class="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"
+              ></span>
+              <span class="text-sm text-brand-300"
+                >Trusted by 10,000+ educators</span
+              >
+            </div>
+
+            <!-- Heading -->
+            <h1
+              class="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6"
+            >
+              Create quizzes that
+              <span class="gradient-text">engage & inspire</span>
+            </h1>
+
+            <!-- Subheading -->
+            <p class="text-lg text-zinc-400 mb-8 max-w-xl mx-auto lg:mx-0">
+              The modern quiz platform built for teachers. Create interactive
+              assessments, track student progress, and make learning fun.
+            </p>
+
+            <!-- CTA Buttons -->
+            <div
+              class="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start"
+            >
+              <a
+                href="/register-teacher.html"
+                class="btn-shine w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 bg-brand-500 hover:bg-brand-600 text-white font-semibold rounded-xl transition-all shadow-lg shadow-brand-500/25"
+              >
+                <i data-lucide="graduation-cap" class="w-5 h-5 mr-2"></i>
+                Start as Teacher
+              </a>
+              <a
+                href="/join-quiz.html"
+                class="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-xl transition-all border border-green-500"
+              >
+                <i data-lucide="user-plus" class="w-5 h-5 mr-2"></i>
+                Join Quiz
+              </a>
+              <a
+                href="/register-admin.html"
+                class="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 bg-zinc-800 hover:bg-zinc-700 text-white font-semibold rounded-xl transition-all border border-zinc-700"
+              >
+                <i data-lucide="shield" class="w-5 h-5 mr-2"></i>
+                Admin Access
+              </a>
+            </div>
+
+            <!-- Stats -->
+            <div
+              class="flex items-center gap-8 mt-12 justify-center lg:justify-start"
+            >
+              <div>
+                <div class="text-2xl font-bold text-white">50K+</div>
+                <div class="text-sm text-zinc-500">Quizzes Created</div>
+              </div>
+              <div class="w-px h-10 bg-zinc-800"></div>
+              <div>
+                <div class="text-2xl font-bold text-white">1M+</div>
+                <div class="text-sm text-zinc-500">Quiz Attempts</div>
+              </div>
+              <div class="w-px h-10 bg-zinc-800"></div>
+              <div>
+                <div class="text-2xl font-bold text-white">98%</div>
+                <div class="text-sm text-zinc-500">Satisfaction</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Content - Dashboard Preview -->
+          <div class="relative">
+            <div
+              class="relative bg-zinc-900 rounded-2xl border border-zinc-800 shadow-2xl overflow-hidden animate-float"
+            >
+              <!-- Browser bar -->
+              <div
+                class="flex items-center gap-2 px-4 py-3 bg-zinc-800/50 border-b border-zinc-700/50"
+              >
+                <div class="flex gap-1.5">
+                  <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
+                  <div class="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+                  <div class="w-3 h-3 rounded-full bg-green-500/80"></div>
+                </div>
+                <div class="flex-1 mx-4">
+                  <div
+                    class="bg-zinc-700/50 rounded-md px-3 py-1 text-xs text-zinc-400 text-center"
+                  >
+                    quizcraft.app/dashboard
+                  </div>
+                </div>
+              </div>
+
+              <!-- Dashboard preview content -->
+              <div class="p-6">
+                <div class="flex items-center justify-between mb-6">
+                  <div>
+                    <div class="text-sm text-zinc-500">Welcome back,</div>
+                    <div class="text-lg font-semibold">Team : Team 3117</div>
+                  </div>
+                  <div
+                    class="w-10 h-10 bg-brand-500 rounded-full flex items-center justify-center text-white font-semibold"
+                  >
+                    3117
+                  </div>
+                </div>
+
+                <!-- Quick actions -->
+                <div class="grid grid-cols-3 gap-3 mb-6">
+                  <div
+                    class="bg-brand-500/10 border border-brand-500/20 rounded-xl p-4 text-center"
+                  >
+                    <i
+                      data-lucide="plus-circle"
+                      class="w-6 h-6 text-brand-400 mx-auto mb-2"
+                    ></i>
+                    <div class="text-xs text-zinc-300">Create Quiz</div>
+                  </div>
+                  <div
+                    class="bg-zinc-800/50 border border-zinc-700/50 rounded-xl p-4 text-center"
+                  >
+                    <i
+                      data-lucide="search"
+                      class="w-6 h-6 text-zinc-400 mx-auto mb-2"
+                    ></i>
+                    <div class="text-xs text-zinc-400">Find Quiz</div>
+                  </div>
+                  <div
+                    class="bg-zinc-800/50 border border-zinc-700/50 rounded-xl p-4 text-center"
+                  >
+                    <i
+                      data-lucide="upload"
+                      class="w-6 h-6 text-zinc-400 mx-auto mb-2"
+                    ></i>
+                    <div class="text-xs text-zinc-400">Upload</div>
+                  </div>
+                </div>
+
+                <!-- Recent quizzes -->
+                <div class="text-sm text-zinc-400 mb-3">Recent Quizzes</div>
+                <div class="space-y-2">
+                  <div
+                    class="flex items-center gap-3 p-3 bg-zinc-800/30 rounded-lg"
+                  >
+                    <div
+                      class="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center"
+                    >
+                      <i
+                        data-lucide="flask-conical"
+                        class="w-4 h-4 text-purple-400"
+                      ></i>
+                    </div>
+                    <div class="flex-1">
+                      <div class="text-sm font-medium">General knowledge</div>
+                      <div class="text-xs text-zinc-500">15 questions</div>
+                    </div>
+                    <div class="text-xs text-green-400">Published</div>
+                  </div>
+                  <div
+                    class="flex items-center gap-3 p-3 bg-zinc-800/30 rounded-lg"
+                  >
+                    <div
+                      class="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center"
+                    >
+                      <i
+                        data-lucide="calculator"
+                        class="w-4 h-4 text-blue-400"
+                      ></i>
+                    </div>
+                    <div class="flex-1">
+                      <div class="text-sm font-medium">Personality Development</div>
+                      <div class="text-xs text-zinc-500">20 questions</div>
+                    </div>
+                    <div class="text-xs text-yellow-400">Draft</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-24 bg-zinc-900/50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Section header -->
+        <div class="text-center mb-16">
+          <div
+            class="inline-flex items-center px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/20 mb-4"
+          >
+            <span class="text-sm text-brand-300">Features</span>
+          </div>
+          <h2 class="text-3xl sm:text-4xl font-bold mb-4">
+            Everything you need to create amazing quizzes
+          </h2>
+          <p class="text-zinc-400 max-w-2xl mx-auto">
+            Powerful tools designed for educators who want to make assessment
+            engaging and effective.
+          </p>
+        </div>
+
+        <!-- Features grid -->
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Feature 1 -->
+          <div
+            class="feature-card p-6 bg-zinc-900 border border-zinc-800 rounded-2xl"
+          >
+            <div
+              class="w-12 h-12 bg-brand-500/10 rounded-xl flex items-center justify-center mb-4"
+            >
+              <i data-lucide="zap" class="w-6 h-6 text-brand-400"></i>
+            </div>
+            <h3 class="text-lg font-semibold mb-2">Quick Quiz Builder</h3>
+            <p class="text-zinc-400 text-sm">
+              Create quizzes in minutes with our intuitive drag-and-drop
+              interface. No technical skills required.
+            </p>
+          </div>
+
+          <!-- Feature 2 -->
+          <div
+            class="feature-card p-6 bg-zinc-900 border border-zinc-800 rounded-2xl"
+          >
+            <div
+              class="w-12 h-12 bg-green-500/10 rounded-xl flex items-center justify-center mb-4"
+            >
+              <i data-lucide="timer" class="w-6 h-6 text-green-400"></i>
+            </div>
+            <h3 class="text-lg font-semibold mb-2">Timed Assessments</h3>
+            <p class="text-zinc-400 text-sm">
+              Set time limits for quizzes with auto-submit functionality.
+              Perfect for exams and timed tests.
+            </p>
+          </div>
+
+          <!-- Feature 3 -->
+          <div
+            class="feature-card p-6 bg-zinc-900 border border-zinc-800 rounded-2xl"
+          >
+            <div
+              class="w-12 h-12 bg-purple-500/10 rounded-xl flex items-center justify-center mb-4"
+            >
+              <i data-lucide="bar-chart-3" class="w-6 h-6 text-purple-400"></i>
+            </div>
+            <h3 class="text-lg font-semibold mb-2">Detailed Analytics</h3>
+            <p class="text-zinc-400 text-sm">
+              Track student performance with comprehensive reports and insights.
+              Identify areas for improvement.
+            </p>
+          </div>
+
+          <!-- Feature 4 -->
+          <div
+            class="feature-card p-6 bg-zinc-900 border border-zinc-800 rounded-2xl"
+          >
+            <div
+              class="w-12 h-12 bg-orange-500/10 rounded-xl flex items-center justify-center mb-4"
+            >
+              <i data-lucide="folder-open" class="w-6 h-6 text-orange-400"></i>
+            </div>
+            <h3 class="text-lg font-semibold mb-2">Quiz Library</h3>
+            <p class="text-zinc-400 text-sm">
+              Organize your quizzes by category. Easily find, edit, and reuse
+              your content anytime.
+            </p>
+          </div>
+
+          <!-- Feature 5 -->
+          <div
+            class="feature-card p-6 bg-zinc-900 border border-zinc-800 rounded-2xl"
+          >
+            <div
+              class="w-12 h-12 bg-cyan-500/10 rounded-xl flex items-center justify-center mb-4"
+            >
+              <i data-lucide="share-2" class="w-6 h-6 text-cyan-400"></i>
+            </div>
+            <h3 class="text-lg font-semibold mb-2">Easy Sharing</h3>
+            <p class="text-zinc-400 text-sm">
+              Share quizzes with a simple link or access code. Students can join
+              instantly from any device.
+            </p>
+          </div>
+
+          <!-- Feature 6 -->
+          <div
+            class="feature-card p-6 bg-zinc-900 border border-zinc-800 rounded-2xl"
+          >
+            <div
+              class="w-12 h-12 bg-pink-500/10 rounded-xl flex items-center justify-center mb-4"
+            >
+              <i data-lucide="shield-check" class="w-6 h-6 text-pink-400"></i>
+            </div>
+            <h3 class="text-lg font-semibold mb-2">Secure & Private</h3>
+            <p class="text-zinc-400 text-sm">
+              Enterprise-grade security with role-based access. Your data is
+              encrypted and protected.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How it Works Section -->
+    <section id="how-it-works" class="py-24">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Section header -->
+        <div class="text-center mb-16">
+          <div
+            class="inline-flex items-center px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/20 mb-4"
+          >
+            <span class="text-sm text-brand-300">How it Works</span>
+          </div>
+          <h2 class="text-3xl sm:text-4xl font-bold mb-4">
+            Get started in 3 simple steps
+          </h2>
+          <p class="text-zinc-400 max-w-2xl mx-auto">
+            From signup to your first quiz in under 5 minutes.
+          </p>
+        </div>
+
+        <!-- Steps -->
+        <div class="grid md:grid-cols-3 gap-8">
+          <!-- Step 1 -->
+          <div class="relative text-center">
+            <div
+              class="w-16 h-16 bg-brand-500 rounded-2xl flex items-center justify-center mx-auto mb-6 text-2xl font-bold"
+            >
+              1
+            </div>
+            <h3 class="text-xl font-semibold mb-3">Create Account</h3>
+            <p class="text-zinc-400">
+              Sign up as a teacher or administrator. It takes less than a
+              minute.
+            </p>
+
+            <!-- Connector line -->
+            <div
+              class="hidden md:block absolute top-8 left-[60%] w-[80%] h-px bg-gradient-to-r from-brand-500 to-transparent"
+            ></div>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="relative text-center">
+            <div
+              class="w-16 h-16 bg-brand-500 rounded-2xl flex items-center justify-center mx-auto mb-6 text-2xl font-bold"
+            >
+              2
+            </div>
+            <h3 class="text-xl font-semibold mb-3">Build Your Quiz</h3>
+            <p class="text-zinc-400">
+              Add questions, set time limits, and customize your assessment.
+            </p>
+
+            <!-- Connector line -->
+            <div
+              class="hidden md:block absolute top-8 left-[60%] w-[80%] h-px bg-gradient-to-r from-brand-500 to-transparent"
+            ></div>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="text-center">
+            <div
+              class="w-16 h-16 bg-brand-500 rounded-2xl flex items-center justify-center mx-auto mb-6 text-2xl font-bold"
+            >
+              3
+            </div>
+            <h3 class="text-xl font-semibold mb-3">Share & Analyze</h3>
+            <p class="text-zinc-400">
+              Share with students and watch the results come in real-time.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="py-24 bg-zinc-900/50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Section header -->
+        <div class="text-center mb-16">
+          <div
+            class="inline-flex items-center px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/20 mb-4"
+          >
+            <span class="text-sm text-brand-300">Testimonials</span>
+          </div>
+          <h2 class="text-3xl sm:text-4xl font-bold mb-4">
+            Loved by educators worldwide
+          </h2>
+        </div>
+
+        <!-- Testimonials grid -->
+        <div class="grid md:grid-cols-3 gap-6">
+          <!-- Testimonial 1 -->
+          <div class="p-6 bg-zinc-900 border border-zinc-800 rounded-2xl">
+            <div class="flex items-center gap-1 mb-4">
+              <i
+                data-lucide="star"
+                class="w-4 h-4 text-yellow-400 fill-yellow-400"
+              ></i>
+              <i
+                data-lucide="star"
+                class="w-4 h-4 text-yellow-400 fill-yellow-400"
+              ></i>
+              <i
+                data-lucide="star"
+                class="w-4 h-4 text-yellow-400 fill-yellow-400"
+              ></i>
+              <i
+                data-lucide="star"
+                class="w-4 h-4 text-yellow-400 fill-yellow-400"
+              ></i>
+              <i
+                data-lucide="star"
+                class="w-4 h-4 text-yellow-400 fill-yellow-400"
+              ></i>
+            </div>
+            <p class="text-zinc-300 mb-6">
+              "QuizCraft has transformed how I assess my students. The analytics
+              help me understand where they struggle."
+            </p>
+            <div class="flex items-center gap-3">
+              <div
+                class="w-10 h-10 bg-gradient-to-br from-brand-400 to-purple-500 rounded-full"
+              ></div>
+              <div>
+                <div class="font-medium">Aditya Dadgale</div>
+                <div class="text-sm text-zinc-500">Developer At ZenByte Solution</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Testimonial 2 -->
+          <div class="p-6 bg-zinc-900 border border-zinc-800 rounded-2xl">
+            <div class="flex items-center gap-1 mb-4">
+              <i
+                data-lucide="star"
+                class="w-4 h-4 text-yellow-400 fill-yellow-400"
+              ></i>
+              <i
+                data-lucide="star"
+                class="w-4 h-4 text-yellow-400 fill-yellow-400"
+              ></i>
+              <i
+                data-lucide="star"
+                class="w-4 h-4 text-yellow-400 fill-yellow-400"
+              ></i>
+              <i
+                data-lucide="star"
+                class="w-4 h-4 text-yellow-400 fill-yellow-400"
+              ></i>
+              <i
+                data-lucide="star"
+                class="w-4 h-4 text-yellow-400 fill-yellow-400"
+              ></i>
+            </div>
+            <p class="text-zinc-300 mb-6">
+              "The timed quiz feature is perfect for exam preparation. My
+              students love the interactive experience."
+            </p>
+            <div class="flex items-center gap-3">
+              <div
+                class="w-10 h-10 bg-gradient-to-br from-green-400 to-cyan-500 rounded-full"
+              ></div>
+              <div>
+                <div class="font-medium">Harshal Belulkar</div>
+                <div class="text-sm text-zinc-500">System Developer</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Testimonial 3 -->
+          <div class="p-6 bg-zinc-900 border border-zinc-800 rounded-2xl">
+            <div class="flex items-center gap-1 mb-4">
+              <i
+                data-lucide="star"
+                class="w-4 h-4 text-yellow-400 fill-yellow-400"
+              ></i>
+              <i
+                data-lucide="star"
+                class="w-4 h-4 text-yellow-400 fill-yellow-400"
+              ></i>
+              <i
+                data-lucide="star"
+                class="w-4 h-4 text-yellow-400 fill-yellow-400"
+              ></i>
+              <i
+                data-lucide="star"
+                class="w-4 h-4 text-yellow-400 fill-yellow-400"
+              ></i>
+              <i
+                data-lucide="star"
+                class="w-4 h-4 text-yellow-400 fill-yellow-400"
+              ></i>
+            </div>
+            <p class="text-zinc-300 mb-6">
+              "As an admin, I can easily manage all teachers and see
+              platform-wide analytics. Incredibly powerful."
+            </p>
+            <div class="flex items-center gap-3">
+              <div
+                class="w-10 h-10 bg-gradient-to-br from-orange-400 to-pink-500 rounded-full"
+              ></div>
+              <div>
+                <div class="font-medium">Tanvi Ayachit</div>
+                <div class="text-sm text-zinc-500">System Analyst</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-24">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div
+          class="bg-gradient-to-r from-brand-600 to-purple-600 rounded-3xl p-12 relative overflow-hidden"
+        >
+          <!-- Background decoration -->
+          <div class="absolute top-0 left-0 w-full h-full opacity-10">
+            <div
+              class="absolute top-10 left-10 w-20 h-20 border-2 border-white rounded-full"
+            ></div>
+            <div
+              class="absolute bottom-10 right-10 w-32 h-32 border-2 border-white rounded-full"
+            ></div>
+          </div>
+
+          <div class="relative">
+            <h2 class="text-3xl sm:text-4xl font-bold mb-4">
+              Ready to transform your assessments?
+            </h2>
+            <p class="text-brand-100 mb-8 max-w-xl mx-auto">
+              Join thousands of educators who are already using QuizCraft to
+              create engaging quizzes.
+            </p>
+            <div
+              class="flex flex-col sm:flex-row items-center gap-4 justify-center"
+            >
+              <a
+                href="/register-teacher.html"
+                class="inline-flex items-center px-6 py-3 bg-white text-brand-600 font-semibold rounded-xl hover:bg-zinc-100 transition-colors"
+              >
+                <i data-lucide="rocket" class="w-5 h-5 mr-2"></i>
+                Start Free Today
+              </a>
+              <a
+                href="/login.html"
+                class="inline-flex items-center px-6 py-3 bg-white/10 text-white font-semibold rounded-xl hover:bg-white/20 transition-colors border border-white/20"
+              >
+                Sign In
+                <i data-lucide="arrow-right" class="w-5 h-5 ml-2"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 border-t border-zinc-800">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div
+          class="flex flex-col md:flex-row items-center justify-between gap-6"
+        >
+          <!-- Logo -->
+          <a href="/" class="flex items-center space-x-2">
+            <div
+              class="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center"
+            >
+              <i data-lucide="brain" class="w-5 h-5 text-white"></i>
+            </div>
+            <span class="text-lg font-bold"
+              >Quiz<span class="text-brand-400">Craft</span></span
+            >
+          </a>
+
+          <!-- Links -->
+          <div class="flex items-center gap-6 text-sm text-zinc-400">
+            <a href="#" class="hover:text-white transition-colors">Privacy</a>
+            <a href="#" class="hover:text-white transition-colors">Terms</a>
+            <a href="#" class="hover:text-white transition-colors">Contact</a>
+          </div>
+
+          <!-- Copyright -->
+          <div class="text-sm text-zinc-500">
+            © 2024 QuizCraft. All rights reserved.
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Initialize Lucide Icons -->
+    <script>
+      lucide.createIcons();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,685 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Create a new quiz - QuizCraft" />
+  <title>Create Quiz - QuizCraft</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts - Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="/css/styles.css" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ["Inter", "system-ui", "sans-serif"],
+          },
+          colors: {
+            brand: {
+              50: "#eef2ff",
+              100: "#e0e7ff",
+              200: "#c7d2fe",
+              300: "#a5b4fc",
+              400: "#818cf8",
+              500: "#6366f1",
+              600: "#4f46e5",
+              700: "#4338ca",
+              800: "#3730a3",
+              900: "#312e81",
+            },
+          },
+        },
+      },
+    };
+  </script>
+</head>
+
+<body class="font-sans bg-zinc-950 text-zinc-100 antialiased min-h-screen flex flex-col md:flex-row">
+
+  <!-- Mobile Header -->
+  <div id="mobile-header"
+    class="md:hidden flex items-center justify-between p-4 bg-zinc-900 border-b border-zinc-800 sticky top-0 z-30">
+    <div class="flex items-center gap-2">
+      <div class="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center">
+        <i data-lucide="brain" class="w-5 h-5 text-white"></i>
+      </div>
+      <span class="text-lg font-bold">Quiz<span class="text-brand-400">Craft</span></span>
+    </div>
+    <button onclick="toggleSidebar()"
+      class="p-2 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-800 transition-colors">
+      <i data-lucide="menu" class="w-6 h-6"></i>
+    </button>
+  </div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar"
+    class="fixed inset-y-0 left-0 z-50 w-64 bg-zinc-900 border-r border-zinc-800 p-4 flex flex-col transform -translate-x-full transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:h-screen">
+    <!-- Logo (Desktop only) -->
+    <a href="/" class="hidden md:flex items-center space-x-2 mb-8">
+      <div class="w-10 h-10 bg-brand-500 rounded-xl flex items-center justify-center">
+        <i data-lucide="brain" class="w-6 h-6 text-white"></i>
+      </div>
+      <span class="text-xl font-bold">Quiz<span class="text-brand-400">Craft</span></span>
+    </a>
+
+    <!-- Mobile Close Button -->
+    <div class="md:hidden flex justify-end mb-4">
+      <button onclick="toggleSidebar()" class="p-2 text-zinc-400 hover:text-white">
+        <i data-lucide="x" class="w-6 h-6"></i>
+      </button>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="flex-1 space-y-1">
+      <a href="/dashboard.html"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors">
+        <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+        <span>Dashboard</span>
+      </a>
+      <a href="/quizzes.html"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors">
+        <i data-lucide="file-question" class="w-5 h-5"></i>
+        <span>My Quizzes</span>
+      </a>
+      <a href="/create-quiz.html"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl bg-brand-500/10 text-brand-400 border border-brand-500/20">
+        <i data-lucide="plus-circle" class="w-5 h-5"></i>
+        <span class="font-medium">Create Quiz</span>
+      </a>
+      <a href="/results.html"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors">
+        <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+        <span>Results</span>
+      </a>
+      <a href="/students.html"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors">
+        <i data-lucide="users" class="w-5 h-5"></i>
+        <span>Students</span>
+      </a>
+    </nav>
+
+    <!-- User Profile -->
+    <div class="border-t border-zinc-800 pt-4 mt-4">
+      <div class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-zinc-800 cursor-pointer transition-colors">
+        <div class="w-10 h-10 bg-brand-500 rounded-full flex items-center justify-center">
+          <span id="userInitial" class="font-semibold text-white">T</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p id="userName" class="font-medium truncate">Teacher</p>
+          <p class="text-xs text-zinc-500">Teacher</p>
+        </div>
+        <button id="logoutBtn" class="text-zinc-500 hover:text-red-400 transition-colors" title="Logout">
+          <i data-lucide="log-out" class="w-5 h-5"></i>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 p-4 md:p-8 w-full md:w-auto overflow-y-auto">
+    <!-- Header -->
+    <div class="mb-8">
+      <div class="flex items-center gap-2 text-zinc-500 mb-2">
+        <a href="/dashboard.html" class="hover:text-zinc-300">Dashboard</a>
+        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+        <span class="text-zinc-300">Create Quiz</span>
+      </div>
+      <h1 class="text-3xl font-bold">Create New Quiz</h1>
+    </div>
+
+    <!-- Quiz Form -->
+    <form id="quizForm" class="max-w-4xl">
+      <!-- Quiz Details Card -->
+      <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 mb-6">
+        <h2 class="text-lg font-semibold mb-4 flex items-center gap-2">
+          <i data-lucide="info" class="w-5 h-5 text-brand-400"></i>
+          Quiz Details
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Title -->
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-zinc-300 mb-2">Quiz Title *</label>
+            <input type="text" id="title" name="title" required
+              class="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition-colors"
+              placeholder="e.g., Mathematics Chapter 5 Quiz" />
+          </div>
+
+          <!-- Description -->
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-zinc-300 mb-2">Description</label>
+            <textarea id="description" name="description" rows="3"
+              class="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition-colors resize-none"
+              placeholder="Brief description of what this quiz covers..."></textarea>
+          </div>
+
+          <!-- Category -->
+          <div>
+            <label class="block text-sm font-medium text-zinc-300 mb-2">Category *</label>
+            <select id="category" name="category" required
+              class="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition-colors"
+              title="Select a category">
+              <option value="">Select a category</option>
+              <option value="mathematics">Mathematics</option>
+              <option value="science">Science</option>
+              <option value="english">English</option>
+              <option value="history">History</option>
+              <option value="geography">Geography</option>
+              <option value="general-knowledge">General Knowledge</option>
+              <option value="computer-science">Computer Science</option>
+            </select>
+          </div>
+
+          <!-- Difficulty -->
+          <div>
+            <label class="block text-sm font-medium text-zinc-300 mb-2">Difficulty</label>
+            <select id="difficulty" name="difficulty" title="Select difficulty level"
+              class="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition-colors">
+              <option value="easy">Easy</option>
+              <option value="medium" selected>Medium</option>
+              <option value="hard">Hard</option>
+            </select>
+          </div>
+
+          <!-- Time Limit -->
+          <div>
+            <label class="block text-sm font-medium text-zinc-300 mb-2">Time Limit (minutes)</label>
+            <input type="number" id="timeLimit" name="timeLimit" min="1" max="180" title="Enter time limit in minutes"
+              placeholder="30" value="30"
+              class="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition-colors" />
+          </div>
+
+          <!-- Pass Percentage -->
+          <div>
+            <label class="block text-sm font-medium text-zinc-300 mb-2">Pass Percentage (%)</label>
+            <input type="number" id="passPercentage" name="passPercentage" title="Enter pass percentage"
+              placeholder="70" min="0" max="100" value="60"
+              class="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition-colors" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Questions Section -->
+      <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 mb-6">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-semibold flex items-center gap-2">
+            <i data-lucide="help-circle" class="w-5 h-5 text-brand-400"></i>
+            Questions
+          </h2>
+          <div class="flex gap-2">
+            <button type="button" id="magicGenerateBtn"
+              class="flex items-center gap-2 px-4 py-2 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 hover:bg-indigo-500/20 rounded-xl transition-all">
+              <i data-lucide="sparkles" class="w-4 h-4"></i>
+              Magic Generate
+            </button>
+            <button type="button" id="addQuestionBtn"
+              class="flex items-center gap-2 px-4 py-2 bg-brand-500 hover:bg-brand-600 rounded-xl transition-colors">
+              <i data-lucide="plus" class="w-4 h-4"></i>
+              Add Question
+            </button>
+          </div>
+        </div>
+
+        <!-- Questions Container -->
+        <div id="questionsContainer" class="space-y-4">
+          <!-- Question Template will be added here -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="text-center py-12 text-zinc-500">
+          <i data-lucide="file-question" class="w-12 h-12 mx-auto mb-4 opacity-50"></i>
+          <p>No questions added yet</p>
+          <p class="text-sm">Click "Add Question" to get started</p>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex items-center justify-between">
+        <button type="button" onclick="window.location.href = '/quizzes.html'"
+          class="px-6 py-3 bg-zinc-800 hover:bg-zinc-700 rounded-xl transition-colors">
+          Cancel
+        </button>
+        <div class="flex gap-3">
+          <button type="button" id="saveDraftBtn"
+            class="px-6 py-3 bg-zinc-800 hover:bg-zinc-700 rounded-xl transition-colors flex items-center gap-2">
+            <i data-lucide="save" class="w-4 h-4"></i>
+            Save as Draft
+          </button>
+          <button type="submit" id="publishBtn"
+            class="px-6 py-3 bg-brand-500 hover:bg-brand-600 rounded-xl transition-colors flex items-center gap-2">
+            <i data-lucide="send" class="w-4 h-4"></i>
+            Publish Quiz
+          </button>
+        </div>
+      </div>
+    </form>
+  </main>
+  <script src="/js/mobile-nav.js"></script>
+
+  <!-- Question Template (Hidden) -->
+  <template id="questionTemplate">
+    <div class="question-item bg-zinc-800/50 border border-zinc-700 rounded-xl p-5" data-question-index="">
+      <div class="flex items-start justify-between mb-4">
+        <div class="flex items-center gap-3">
+          <span
+            class="question-number w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center text-sm font-semibold">1</span>
+          <h3 class="font-medium">Question</h3>
+        </div>
+        <button type="button" class="delete-question-btn text-zinc-500 hover:text-red-400 transition-colors p-2">
+          <i data-lucide="trash-2" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Question Text -->
+      <div class="mb-4">
+        <input type="text"
+          class="question-text w-full px-4 py-3 bg-zinc-900 border border-zinc-700 rounded-xl focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition-colors"
+          placeholder="Enter your question here..." required />
+      </div>
+
+      <!-- Options -->
+      <div class="space-y-3">
+        <p class="text-sm text-zinc-400">
+          Options (click radio to mark correct answer)
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div class="flex items-center gap-3">
+            <input type="radio" name="correct-0" value="0"
+              class="correct-option w-4 h-4 text-brand-500 bg-zinc-800 border-zinc-600 focus:ring-brand-500" />
+            <input type="text"
+              class="option-text flex-1 px-4 py-2 bg-zinc-900 border border-zinc-700 rounded-lg focus:border-brand-500 outline-none transition-colors"
+              placeholder="Option A" required />
+          </div>
+          <div class="flex items-center gap-3">
+            <input type="radio" name="correct-0" value="1"
+              class="correct-option w-4 h-4 text-brand-500 bg-zinc-800 border-zinc-600 focus:ring-brand-500" />
+            <input type="text"
+              class="option-text flex-1 px-4 py-2 bg-zinc-900 border border-zinc-700 rounded-lg focus:border-brand-500 outline-none transition-colors"
+              placeholder="Option B" required />
+          </div>
+          <div class="flex items-center gap-3">
+            <input type="radio" name="correct-0" value="2"
+              class="correct-option w-4 h-4 text-brand-500 bg-zinc-800 border-zinc-600 focus:ring-brand-500" />
+            <input type="text"
+              class="option-text flex-1 px-4 py-2 bg-zinc-900 border border-zinc-700 rounded-lg focus:border-brand-500 outline-none transition-colors"
+              placeholder="Option C" required />
+          </div>
+          <div class="flex items-center gap-3">
+            <input type="radio" name="correct-0" value="3"
+              class="correct-option w-4 h-4 text-brand-500 bg-zinc-800 border-zinc-600 focus:ring-brand-500" />
+            <input type="text"
+              class="option-text flex-1 px-4 py-2 bg-zinc-900 border border-zinc-700 rounded-lg focus:border-brand-500 outline-none transition-colors"
+              placeholder="Option D" required />
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <!-- Auth Utilities -->
+  <script src="/js/auth.js"></script>
+  <script src="/config.js"></script>
+  <!-- Initialize Lucide Icons -->
+  <script>
+    lucide.createIcons();
+
+    // Initialize authentication
+    let currentUser = null;
+
+    async function initPage() {
+      currentUser = await initAuth();
+      if (!currentUser) return;
+
+      // Load categories after auth
+      await loadCategories();
+    }
+
+    // Fetch and populate categories
+    async function loadCategories() {
+      try {
+        const response = await authFetch("/api/categories");
+        const data = await response.json();
+        const categorySelect = document.getElementById("category");
+
+        if (data.categories && data.categories.length > 0) {
+          categorySelect.innerHTML =
+            '<option value="">Select a category</option>' +
+            data.categories
+              .map((cat) => `<option value="${cat._id}">${cat.name}</option>`)
+              .join("");
+        }
+      } catch (error) {
+        console.error("Error loading categories:", error);
+      }
+    }
+
+    initPage();
+
+    // Question counter
+    let questionCount = 0;
+    const questionsContainer = document.getElementById("questionsContainer");
+    const emptyState = document.getElementById("emptyState");
+    const questionTemplate = document.getElementById("questionTemplate");
+    // Add Question
+    document
+      .getElementById("addQuestionBtn")
+      .addEventListener("click", () => {
+        addQuestion();
+      });
+
+    // Function to add a question
+    function addQuestion(data = null) {
+      const clone = questionTemplate.content.cloneNode(true);
+      const questionItem = clone.querySelector(".question-item");
+
+      questionCount++;
+      questionItem.dataset.questionIndex = questionCount;
+      questionItem.querySelector(".question-number").textContent = questionCount;
+
+      // Update radio button names
+      const radios = questionItem.querySelectorAll(".correct-option");
+      radios.forEach((radio) => {
+        radio.name = `correct-${questionCount}`;
+      });
+
+      // If data is provided (from AI), populate the fields
+      if (data) {
+        questionItem.querySelector(".question-text").value = data.questionText;
+        const optionInputs = questionItem.querySelectorAll(".option-text");
+        const optionRadios = questionItem.querySelectorAll(".correct-option");
+        
+        data.options.forEach((opt, idx) => {
+          if (optionInputs[idx]) optionInputs[idx].value = opt.text;
+          if (optionRadios[idx]) optionRadios[idx].checked = opt.isCorrect;
+        });
+      }
+
+      // Delete button handler
+      questionItem
+        .querySelector(".delete-question-btn")
+        .addEventListener("click", function () {
+          questionItem.remove();
+          updateQuestionNumbers();
+          lucide.createIcons();
+        });
+
+      questionsContainer.appendChild(clone);
+      emptyState.classList.add("hidden");
+      lucide.createIcons();
+      
+      // If adding manually, scroll to the new question
+      if (!data) {
+        questionItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+
+    // Magic Generate Handler
+    document.getElementById("magicGenerateBtn").addEventListener("click", async () => {
+      const title = document.getElementById("title").value;
+      const categorySelect = document.getElementById("category");
+      const categoryName = categorySelect.options[categorySelect.selectedIndex]?.text;
+      const difficulty = document.getElementById("difficulty").value;
+      
+      if (!title || !categoryName || categoryName === "Select a category") {
+        alert("Please enter a title and select a category first so I know what to generate!");
+        return;
+      }
+
+      const magicBtn = document.getElementById("magicGenerateBtn");
+      const originalHtml = magicBtn.innerHTML;
+      
+      try {
+        magicBtn.disabled = true;
+        magicBtn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Generating...';
+        lucide.createIcons();
+
+        const response = await authFetch("/api/ai/generate-questions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            title,
+            categoryName,
+            difficulty,
+            count: 5
+          })
+        });
+
+        const result = await response.json();
+        
+        if (!response.ok) throw new Error(result.error || "Failed to generate questions");
+
+        if (result.questions && result.questions.length > 0) {
+          result.questions.forEach(q => addQuestion(q));
+          
+          // Toast or simple notification
+          const toast = document.createElement("div");
+          toast.className = "fixed bottom-8 left-1/2 -translate-x-1/2 bg-indigo-600 text-white px-6 py-3 rounded-full shadow-2xl z-50 flex items-center gap-3 animate-bounce";
+          toast.innerHTML = '<i data-lucide="sparkles" class="w-5 h-5"></i> <span>Generated 5 questions for you!</span>';
+          document.body.appendChild(toast);
+          lucide.createIcons();
+          setTimeout(() => toast.remove(), 3000);
+        }
+      } catch (error) {
+        console.error("Generation error:", error);
+        alert("Error generating questions: " + error.message);
+      } finally {
+        magicBtn.disabled = false;
+        magicBtn.innerHTML = originalHtml;
+        lucide.createIcons();
+      }
+    });
+
+    // Update question numbers after deletion
+    function updateQuestionNumbers() {
+      const questions = questionsContainer.querySelectorAll(".question-item");
+      if (questions.length === 0) {
+        emptyState.classList.remove("hidden");
+      }
+      questions.forEach((q, index) => {
+        q.querySelector(".question-number").textContent = index + 1;
+      });
+    }
+
+    // Form submission
+    document
+      .getElementById("quizForm")
+      .addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const publishBtn = document.getElementById("publishBtn");
+        const originalBtnText = publishBtn.innerHTML;
+
+        try {
+          // Disable button and show loading state
+          publishBtn.disabled = true;
+          publishBtn.innerHTML =
+            '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Publishing...';
+          lucide.createIcons();
+
+          const questions = [];
+          let validationError = null;
+
+          const questionItems = document.querySelectorAll(".question-item");
+
+          if (questionItems.length === 0) {
+            throw new Error("Please add at least one question");
+          }
+
+          questionItems.forEach((item, qIndex) => {
+            const questionText = item.querySelector(".question-text").value;
+
+            if (!questionText.trim()) {
+              validationError = `Question ${qIndex + 1}: Please enter a question`;
+              return;
+            }
+
+            const options = [];
+            let hasEmptyOption = false;
+
+            item.querySelectorAll(".option-text").forEach((opt, i) => {
+              if (!opt.value.trim()) {
+                hasEmptyOption = true;
+              }
+              options.push({ text: opt.value, isCorrect: false });
+            });
+
+            if (hasEmptyOption) {
+              validationError = `Question ${qIndex + 1}: Please fill in all 4 options`;
+              return;
+            }
+
+            const selectedRadio = item.querySelector(
+              ".correct-option:checked",
+            );
+            if (!selectedRadio) {
+              validationError = `Question ${qIndex + 1}: Please select the correct answer`;
+              return;
+            }
+
+            const correctIndex = parseInt(selectedRadio.value);
+            options[correctIndex].isCorrect = true;
+
+            questions.push({ questionText, options });
+          });
+
+          if (validationError) {
+            throw new Error(validationError);
+          }
+
+          const quizData = {
+            title: document.getElementById("title").value,
+            description: document.getElementById("description").value,
+            category: document.getElementById("category").value,
+            difficulty: document.getElementById("difficulty").value,
+            timeLimit: parseInt(document.getElementById("timeLimit").value),
+            passPercentage: parseInt(
+              document.getElementById("passPercentage").value,
+            ),
+            questions,
+            isPublished: true,
+          };
+
+          const response = await authFetch("/api/quizzes", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(quizData),
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            // Show detailed error message
+            let errorMsg = data.error || "Failed to create quiz";
+            if (data.details && Array.isArray(data.details)) {
+              errorMsg += ": " + data.details.join(", ");
+            } else if (data.details) {
+              errorMsg += ": " + data.details;
+            }
+            if (data.availableCategories) {
+              errorMsg += "\nAvailable categories: " + data.availableCategories.join(", ");
+            }
+            throw new Error(errorMsg);
+          }
+
+          // Success Modal
+          const modal = document.createElement("div");
+          modal.className =
+            "fixed inset-0 z-50 flex items-center justify-center px-4";
+          modal.innerHTML = `
+              <div class="fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity"></div>
+              <div class="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-md p-6 relative z-10 shadow-2xl transform transition-all scale-100">
+                <div class="text-center mb-6">
+                  <div class="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i data-lucide="check-circle" class="w-8 h-8 text-green-500"></i>
+                  </div>
+                  <h2 class="text-2xl font-bold mb-2">Quiz Published!</h2>
+                  <p class="text-zinc-400">Your quiz is now ready for students to join.</p>
+                </div>
+
+                <div class="space-y-4 mb-6">
+                  <div class="bg-zinc-800/50 rounded-xl p-4 border border-zinc-700">
+                    <label class="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2">Access Code</label>
+                    <div class="flex items-center gap-2">
+                      <code class="flex-1 text-2xl font-mono font-bold text-center tracking-widest text-brand-400">${data.quiz.accessCode || "ERROR"}</code>
+                      <button onclick="navigator.clipboard.writeText('${data.quiz.accessCode}')" class="p-2 hover:bg-zinc-700 rounded-lg text-zinc-400 hover:text-white transition-colors" title="Copy Code">
+                        <i data-lucide="copy" class="w-5 h-5"></i>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="bg-zinc-800/50 rounded-xl p-4 border border-zinc-700">
+                    <label class="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2">Join Link</label>
+                    <div class="flex items-center gap-2">
+                      <input type="text" value="${data.quiz.joinLink || ""}" readonly class="flex-1 bg-transparent text-sm text-zinc-300 outline-none w-full" />
+                      <button onclick="navigator.clipboard.writeText('${data.quiz.joinLink}')" class="p-2 hover:bg-zinc-700 rounded-lg text-zinc-400 hover:text-white transition-colors" title="Copy Link">
+                        <i data-lucide="link" class="w-5 h-5"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <button onclick="window.location.href = '/quizzes.html'" class="w-full py-3 bg-brand-500 hover:bg-brand-600 rounded-xl font-semibold transition-colors">
+                  Go to My Quizzes
+                </button>
+              </div>
+            `;
+          document.body.appendChild(modal);
+          lucide.createIcons();
+
+          // Wait for user action instead of auto-redirect
+          return;
+        } catch (error) {
+          console.error("Quiz creation error:", error);
+
+          // Create error modal with better message display
+          const errorModal = document.createElement("div");
+          errorModal.className =
+            "fixed inset-0 z-50 flex items-center justify-center px-4";
+          errorModal.innerHTML = `
+              <div class="fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity"></div>
+              <div class="bg-zinc-900 border border-red-800/50 rounded-2xl w-full max-w-md p-6 relative z-10 shadow-2xl transform transition-all scale-100">
+                <div class="text-center mb-6">
+                  <div class="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i data-lucide="alert-circle" class="w-8 h-8 text-red-500"></i>
+                  </div>
+                  <h2 class="text-2xl font-bold mb-2 text-red-500">Error Publishing Quiz</h2>
+                  <p class="text-zinc-300 text-sm whitespace-pre-wrap">${error.message}</p>
+                </div>
+
+                <div class="space-y-3">
+                  <button onclick="this.closest('.fixed').remove()" class="w-full py-3 bg-zinc-800 hover:bg-zinc-700 rounded-xl font-semibold transition-colors">
+                    Try Again
+                  </button>
+                </div>
+              </div>
+            `;
+          document.body.appendChild(errorModal);
+          lucide.createIcons();
+
+          // Restore button state
+          publishBtn.disabled = false;
+          publishBtn.innerHTML = originalBtnText;
+          lucide.createIcons();
+        }
+      });
+  </script>
+</body>
+
+</html>

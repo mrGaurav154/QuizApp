@@ -1,0 +1,518 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="QuizCraft Admin Dashboard - Platform Management" />
+  <title>Admin Dashboard - QuizCraft</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts - Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="/css/styles.css" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ["Inter", "system-ui", "sans-serif"],
+          },
+          colors: {
+            brand: {
+              50: "#eef2ff",
+              100: "#e0e7ff",
+              200: "#c7d2fe",
+              300: "#a5b4fc",
+              400: "#818cf8",
+              500: "#6366f1",
+              600: "#4f46e5",
+              700: "#4338ca",
+              800: "#3730a3",
+              900: "#312e81",
+            },
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    /* Sidebar transition */
+    #sidebar {
+      transition: transform 0.3s ease-in-out;
+    }
+
+    /* Overlay transition */
+    #sidebar-overlay {
+      transition: opacity 0.3s ease-in-out;
+    }
+  </style>
+</head>
+
+<body class="font-sans bg-zinc-950 text-zinc-100 antialiased min-h-screen">
+
+  <!-- ========== MOBILE HEADER (visible only on mobile) ========== -->
+  <header id="mobile-header"
+    class="md:hidden sticky top-0 z-30 flex items-center justify-between px-4 py-3 bg-zinc-900 border-b border-zinc-800">
+    <!-- Logo -->
+    <a href="/" class="flex items-center gap-2">
+      <div class="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center">
+        <i data-lucide="shield" class="w-5 h-5 text-white"></i>
+      </div>
+      <span class="text-lg font-bold">Quiz<span class="text-purple-400">Craft</span></span>
+    </a>
+    <!-- Hamburger button -->
+    <button id="hamburger-btn" onclick="toggleSidebar()"
+      class="p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
+      aria-label="Open navigation menu">
+      <i data-lucide="menu" class="w-6 h-6"></i>
+    </button>
+  </header>
+
+  <!-- ========== SIDEBAR OVERLAY (mobile backdrop) ========== -->
+  <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 z-40 hidden opacity-0" onclick="toggleSidebar()">
+  </div>
+
+  <!-- ========== SIDEBAR ========== -->
+  <aside id="sidebar" class="fixed top-0 left-0 h-full w-64 bg-zinc-900 border-r border-zinc-800 p-4 flex flex-col z-50
+             -translate-x-full md:translate-x-0">
+
+    <!-- Logo (desktop only — hidden on mobile via md:flex) -->
+    <a href="/" class="hidden md:flex items-center gap-2 mb-8">
+      <div class="w-10 h-10 bg-purple-500 rounded-xl flex items-center justify-center">
+        <i data-lucide="shield" class="w-6 h-6 text-white"></i>
+      </div>
+      <span class="text-xl font-bold">Quiz<span class="text-purple-400">Craft</span></span>
+    </a>
+
+    <!-- Mobile close button (shown inside sidebar on mobile) -->
+    <div class="md:hidden flex items-center justify-between mb-6">
+      <a href="/" class="flex items-center gap-2">
+        <div class="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center">
+          <i data-lucide="shield" class="w-5 h-5 text-white"></i>
+        </div>
+        <span class="text-lg font-bold">Quiz<span class="text-purple-400">Craft</span></span>
+      </a>
+      <button onclick="toggleSidebar()"
+        class="p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
+        aria-label="Close navigation menu">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="flex-1 space-y-1">
+      <a href="/admin/dashboard.html"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20">
+        <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+        <span class="font-medium">Dashboard</span>
+      </a>
+      <a href="/admin/users.html"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors">
+        <i data-lucide="users" class="w-5 h-5"></i>
+        <span>Manage Users</span>
+      </a>
+      <a href="/admin/categories.html"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors">
+        <i data-lucide="folder" class="w-5 h-5"></i>
+        <span>Categories</span>
+      </a>
+      <a href="/admin/quizzes.html"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors">
+        <i data-lucide="file-question" class="w-5 h-5"></i>
+        <span>All Quizzes</span>
+      </a>
+      <a href="/admin/analytics.html"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors">
+        <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+        <span>Analytics</span>
+      </a>
+    </nav>
+
+    <!-- User Profile -->
+    <div class="border-t border-zinc-800 pt-4 mt-4">
+      <div class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-zinc-800 cursor-pointer transition-colors">
+        <div class="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
+          <span id="userInitial" class="font-semibold text-white">A</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p id="userName" class="font-medium truncate">Admin</p>
+          <p class="text-xs text-zinc-500">Administrator</p>
+        </div>
+        <button id="logoutBtn" class="text-zinc-500 hover:text-red-400 transition-colors" title="Logout">
+          <i data-lucide="log-out" class="w-5 h-5"></i>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ========== MAIN CONTENT ========== -->
+  <main class="md:ml-64 p-4 md:p-8 min-h-screen">
+    <!-- Header -->
+    <div class="mb-6 md:mb-8">
+      <div class="flex items-center gap-2 text-purple-400 mb-2">
+        <i data-lucide="shield" class="w-5 h-5"></i>
+        <span class="text-sm font-medium">Admin Panel</span>
+      </div>
+      <h1 class="text-2xl md:text-3xl font-bold mb-2">Platform Overview</h1>
+      <p class="text-zinc-400 text-sm md:text-base">Monitor and manage the QuizCraft platform.</p>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8">
+      <!-- Total Users -->
+      <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 md:p-6">
+        <div class="flex items-center justify-between mb-3 md:mb-4">
+          <div class="w-10 h-10 md:w-12 md:h-12 bg-purple-500/10 rounded-xl flex items-center justify-center">
+            <i data-lucide="users" class="w-5 h-5 md:w-6 md:h-6 text-purple-400"></i>
+          </div>
+          <span class="text-xs text-green-400 bg-green-400/10 px-2 py-1 rounded-full" id="userGrowth">+0%</span>
+        </div>
+        <p class="text-2xl md:text-3xl font-bold mb-1" id="totalUsers">0</p>
+        <p class="text-zinc-500 text-xs md:text-sm">Total Teachers</p>
+      </div>
+
+      <!-- Total Quizzes -->
+      <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 md:p-6">
+        <div class="flex items-center justify-between mb-3 md:mb-4">
+          <div class="w-10 h-10 md:w-12 md:h-12 bg-amber-500/10 rounded-xl flex items-center justify-center">
+            <i data-lucide="file-question" class="w-5 h-5 md:w-6 md:h-6 text-amber-400"></i>
+          </div>
+          <span class="text-xs text-green-400 bg-green-400/10 px-2 py-1 rounded-full">+0%</span>
+        </div>
+        <p class="text-2xl md:text-3xl font-bold mb-1" id="totalQuizzes">0</p>
+        <p class="text-zinc-500 text-xs md:text-sm">Total Quizzes</p>
+      </div>
+
+      <!-- Total Attempts -->
+      <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 md:p-6">
+        <div class="flex items-center justify-between mb-3 md:mb-4">
+          <div class="w-10 h-10 md:w-12 md:h-12 bg-green-500/10 rounded-xl flex items-center justify-center">
+            <i data-lucide="activity" class="w-5 h-5 md:w-6 md:h-6 text-green-400"></i>
+          </div>
+          <span class="text-xs text-green-400 bg-green-400/10 px-2 py-1 rounded-full">+0%</span>
+        </div>
+        <p class="text-2xl md:text-3xl font-bold mb-1" id="totalAttempts">0</p>
+        <p class="text-zinc-500 text-xs md:text-sm">Quiz Attempts</p>
+      </div>
+
+      <!-- Categories -->
+      <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 md:p-6">
+        <div class="flex items-center justify-between mb-3 md:mb-4">
+          <div class="w-10 h-10 md:w-12 md:h-12 bg-blue-500/10 rounded-xl flex items-center justify-center">
+            <i data-lucide="folder" class="w-5 h-5 md:w-6 md:h-6 text-blue-400"></i>
+          </div>
+        </div>
+        <p class="text-2xl md:text-3xl font-bold mb-1" id="totalCategories">0</p>
+        <p class="text-zinc-500 text-xs md:text-sm">Categories</p>
+      </div>
+    </div>
+
+    <!-- Admin Actions & Recent Activity -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+      <!-- Admin Actions -->
+      <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 md:p-6">
+        <h2 class="text-base md:text-lg font-semibold mb-4">Admin Actions</h2>
+        <div class="space-y-3">
+          <a href="/admin/users.html"
+            class="flex items-center gap-3 p-3 md:p-4 bg-purple-500 hover:bg-purple-600 rounded-xl transition-colors">
+            <i data-lucide="user-plus" class="w-5 h-5 flex-shrink-0"></i>
+            <span class="font-medium text-sm md:text-base">Manage Users</span>
+          </a>
+          <a href="/admin/categories.html"
+            class="flex items-center gap-3 p-3 md:p-4 bg-zinc-800 hover:bg-zinc-700 rounded-xl transition-colors">
+            <i data-lucide="folder-plus" class="w-5 h-5 flex-shrink-0"></i>
+            <span class="text-sm md:text-base">Manage Categories</span>
+          </a>
+          <a href="/admin/quizzes.html"
+            class="flex items-center gap-3 p-3 md:p-4 bg-zinc-800 hover:bg-zinc-700 rounded-xl transition-colors">
+            <i data-lucide="file-question" class="w-5 h-5 flex-shrink-0"></i>
+            <span class="text-sm md:text-base">View All Quizzes</span>
+          </a>
+          <a href="/admin/analytics.html"
+            class="flex items-center gap-3 p-3 md:p-4 bg-zinc-800 hover:bg-zinc-700 rounded-xl transition-colors">
+            <i data-lucide="bar-chart-3" class="w-5 h-5 flex-shrink-0"></i>
+            <span class="text-sm md:text-base">View Analytics</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="lg:col-span-2 bg-zinc-900 border border-zinc-800 rounded-2xl p-4 md:p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-base md:text-lg font-semibold">Recent Activity</h2>
+        </div>
+        <div class="space-y-3 md:space-y-4" id="activityContainer">
+          <div class="text-center py-8 text-zinc-500">
+            <i data-lucide="loader" class="w-6 h-6 animate-spin mx-auto mb-2"></i>
+            <p>Loading activity...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Auth & Scripts -->
+  <script src="/js/auth.js"></script>
+
+  <!-- Mobile Nav Script (inline to avoid extra file dependency) -->
+  <script>
+    // ===================== SIDEBAR TOGGLE =====================
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebar-overlay');
+      const isOpen = !sidebar.classList.contains('-translate-x-full');
+
+      if (isOpen) {
+        // Close sidebar
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('opacity-0');
+        setTimeout(() => overlay.classList.add('hidden'), 300);
+      } else {
+        // Open sidebar
+        overlay.classList.remove('hidden');
+        // Allow paint before animating opacity
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            sidebar.classList.remove('-translate-x-full');
+            overlay.classList.remove('opacity-0');
+          });
+        });
+      }
+    }
+
+    // Close sidebar when a nav link is clicked (mobile)
+    document.querySelectorAll('#sidebar nav a').forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth < 768) toggleSidebar();
+      });
+    });
+
+    // Reset sidebar on resize to desktop
+    window.addEventListener('resize', () => {
+      if (window.innerWidth >= 768) {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        sidebar.classList.remove('-translate-x-full');
+        overlay.classList.add('hidden', 'opacity-0');
+      }
+    });
+  </script>
+
+  <!-- Initialize -->
+  <script>
+    lucide.createIcons();
+
+    let currentUser = null;
+
+    // Initialize admin dashboard
+    async function initDashboard() {
+      try {
+        console.log("🔐 Starting admin dashboard initialization...");
+
+        // Check authentication
+        const user = await checkAuth();
+
+        if (!user) {
+          console.log("❌ No user authenticated");
+          return;
+        }
+
+        currentUser = user;
+        console.log("✅ User authenticated:", user.name, "Role:", user.role);
+
+        // Verify admin role
+        if (user.role !== "admin") {
+          console.log("⛔ User is not admin, redirecting to dashboard");
+          setTimeout(() => {
+            window.location.href = "/dashboard.html";
+          }, 2000);
+          return;
+        }
+
+        // Update user profile UI
+        updateUserUI(user);
+
+        // Load dashboard data
+        await loadDashboardData();
+
+      } catch (error) {
+        console.error("❌ Dashboard init error:", error);
+      }
+    }
+
+    // Load all dashboard data
+    async function loadDashboardData() {
+      try {
+        console.log("📊 Loading dashboard statistics...");
+
+        // Fetch all required data in parallel
+        const [teachersRes, quizzesRes, categoriesRes, resultsRes] = await Promise.all([
+          fetch("/api/users/teachers?limit=1000", { credentials: "include" }),
+          fetch("/api/quizzes?limit=1000", { credentials: "include" }),
+          fetch("/api/categories", { credentials: "include" }),
+          fetch("/api/results?limit=1000", { credentials: "include" }),
+        ]);
+
+        // Parse responses
+        const teachersData = await teachersRes.json();
+        const quizzesData = await quizzesRes.json();
+        const categoriesData = await categoriesRes.json();
+        const resultsData = await resultsRes.json();
+
+        const teachers = teachersData.teachers || [];
+        const quizzes = quizzesData.quizzes || [];
+        const categories = categoriesData.categories || [];
+        const results = resultsData.data || [];
+
+        console.log("📊 Data loaded:", {
+          teachers: teachers.length,
+          quizzes: quizzes.length,
+          categories: categories.length,
+          results: results.length,
+        });
+
+        // Update stat cards
+        document.getElementById("totalUsers").textContent = teachers.length;
+        document.getElementById("totalQuizzes").textContent = quizzes.length;
+        document.getElementById("totalAttempts").textContent = results.length;
+        document.getElementById("totalCategories").textContent = categories.length;
+
+        // Load recent activity
+        loadRecentActivity(teachers, quizzes, categories, results);
+
+      } catch (error) {
+        console.error("❌ Error loading dashboard data:", error);
+        document.getElementById("activityContainer").innerHTML = `
+            <div class="text-center py-8 text-red-500">
+              <p>Unable to load activity data</p>
+              <p class="text-sm text-zinc-400 mt-2">${error.message}</p>
+            </div>
+          `;
+      }
+    }
+
+    // Load and display recent activity
+    function loadRecentActivity(teachers, quizzes, categories, results) {
+      const container = document.getElementById("activityContainer");
+      const activities = [];
+
+      // Add recent teachers
+      if (teachers.length > 0) {
+        teachers.slice(0, 2).forEach((teacher) => {
+          activities.push({
+            icon: "user-plus",
+            color: "green",
+            title: "New teacher registered",
+            description: `${teacher.name} joined the platform`,
+            time: new Date(teacher.createdAt).toLocaleDateString(),
+          });
+        });
+      }
+
+      // Add recent quizzes
+      if (quizzes.length > 0) {
+        quizzes.slice(0, 2).forEach((quiz) => {
+          activities.push({
+            icon: "file-plus",
+            color: "brand",
+            title: "New quiz created",
+            description: `"${quiz.title}" by ${quiz.createdBy?.name || "Unknown"}`,
+            time: new Date(quiz.createdAt).toLocaleDateString(),
+          });
+        });
+      }
+
+      // Add categories
+      if (categories.length > 0) {
+        categories.slice(0, 1).forEach((category) => {
+          activities.push({
+            icon: "folder-plus",
+            color: "amber",
+            title: "New category",
+            description: `"${category.name}" category created`,
+            time: new Date(category.createdAt || Date.now()).toLocaleDateString(),
+          });
+        });
+      }
+
+      // Add completion activity if results exist
+      if (results.length > 0) {
+        activities.push({
+          icon: "check-circle",
+          color: "purple",
+          title: "Quiz attempts",
+          description: `${results.length} total quiz attempts completed`,
+          time: "This month",
+        });
+      }
+
+      // If no activities, show default message
+      if (activities.length === 0) {
+        container.innerHTML = `
+            <div class="text-center py-8 text-zinc-500">
+              <p>No recent activity yet</p>
+            </div>
+          `;
+        return;
+      }
+
+      // Render activities (limit to 4)
+      container.innerHTML = activities
+        .slice(0, 4)
+        .map(
+          (activity) => `
+            <div class="flex items-start gap-3 md:gap-4 p-3 md:p-4 bg-zinc-800/50 rounded-xl">
+              <div class="w-9 h-9 md:w-10 md:h-10 bg-${activity.color}-500/20 rounded-full flex items-center justify-center flex-shrink-0">
+                <i data-lucide="${activity.icon}" class="w-4 h-4 md:w-5 md:h-5 text-${activity.color}-400"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="font-medium text-sm md:text-base">${activity.title}</p>
+                <p class="text-xs md:text-sm text-zinc-500 truncate">${activity.description}</p>
+                <p class="text-xs text-zinc-600 mt-1">${activity.time}</p>
+              </div>
+            </div>
+          `
+        )
+        .join("");
+
+      lucide.createIcons();
+    }
+
+    // Setup logout
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      try {
+        await fetch("/api/auth/logout", {
+          method: "POST",
+          credentials: "include",
+        });
+      } catch (e) {
+        console.error("Logout error:", e);
+      }
+
+      localStorage.removeItem("user");
+      window.location.href = "/login.html";
+    });
+
+    // Start initialization when page loads
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", initDashboard);
+    } else {
+      initDashboard();
+    }
+  </script>
+</body>
+
+</html>

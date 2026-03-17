@@ -1,0 +1,758 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="My Quizzes - QuizCraft" />
+  <title>My Quizzes - QuizCraft</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts - Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="/css/styles.css" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ["Inter", "system-ui", "sans-serif"],
+          },
+          colors: {
+            brand: {
+              50: "#eef2ff",
+              100: "#e0e7ff",
+              200: "#c7d2fe",
+              300: "#a5b4fc",
+              400: "#818cf8",
+              500: "#6366f1",
+              600: "#4f46e5",
+              700: "#4338ca",
+              800: "#3730a3",
+              900: "#312e81",
+            },
+          },
+        },
+      },
+    };
+  </script>
+</head>
+
+<body class="font-sans bg-zinc-950 text-zinc-100 antialiased min-h-screen flex flex-col md:flex-row">
+  <!-- Mobile Header -->
+  <div id="mobile-header"
+    class="md:hidden flex items-center justify-between p-4 bg-zinc-900 border-b border-zinc-800 sticky top-0 z-30">
+    <div class="flex items-center gap-2">
+      <div class="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center">
+        <i data-lucide="brain" class="w-5 h-5 text-white"></i>
+      </div>
+      <span class="text-lg font-bold">Quiz<span class="text-brand-400">Craft</span></span>
+    </div>
+    <button onclick="toggleSidebar()"
+      class="p-2 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-800 transition-colors">
+      <i data-lucide="menu" class="w-6 h-6"></i>
+    </button>
+  </div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar"
+    class="fixed inset-y-0 left-0 z-50 w-64 bg-zinc-900 border-r border-zinc-800 p-4 flex flex-col transform -translate-x-full transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:h-screen">
+    <!-- Logo (Desktop only) -->
+    <a href="/" class="hidden md:flex items-center space-x-2 mb-8">
+      <div class="w-10 h-10 bg-brand-500 rounded-xl flex items-center justify-center">
+        <i data-lucide="brain" class="w-6 h-6 text-white"></i>
+      </div>
+      <span class="text-xl font-bold">Quiz<span class="text-brand-400">Craft</span></span>
+    </a>
+
+    <!-- Mobile Close Button -->
+    <div class="md:hidden flex justify-end mb-4">
+      <button onclick="toggleSidebar()" class="p-2 text-zinc-400 hover:text-white">
+        <i data-lucide="x" class="w-6 h-6"></i>
+      </button>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="flex-1 space-y-1">
+      <a href="/dashboard.html"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors">
+        <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+        <span>Dashboard</span>
+      </a>
+      <a href="/quizzes.html"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl bg-brand-500/10 text-brand-400 border border-brand-500/20">
+        <i data-lucide="file-question" class="w-5 h-5"></i>
+        <span class="font-medium">My Quizzes</span>
+      </a>
+      <a href="/create-quiz.html"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors">
+        <i data-lucide="plus-circle" class="w-5 h-5"></i>
+        <span>Create Quiz</span>
+      </a>
+      <a href="/results.html"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors">
+        <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+        <span>Results</span>
+      </a>
+      <a href="/students.html"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors">
+        <i data-lucide="users" class="w-5 h-5"></i>
+        <span>Students</span>
+      </a>
+    </nav>
+
+    <!-- User Profile -->
+    <div class="border-t border-zinc-800 pt-4 mt-4">
+      <div class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-zinc-800 cursor-pointer transition-colors">
+        <div class="w-10 h-10 bg-brand-500 rounded-full flex items-center justify-center">
+          <span id="userInitial" class="font-semibold text-white">T</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p id="userName" class="font-medium truncate">Teacher</p>
+          <p class="text-xs text-zinc-500">Teacher</p>
+        </div>
+        <button id="logoutBtn" class="text-zinc-500 hover:text-red-400 transition-colors" title="Logout">
+          <i data-lucide="log-out" class="w-5 h-5"></i>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 p-4 md:p-8 w-full md:w-auto overflow-y-auto">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h1 class="text-3xl font-bold mb-2">My Quizzes</h1>
+        <p class="text-zinc-400">Manage and organize your quizzes</p>
+      </div>
+      <a href="/create-quiz.html"
+        class="flex items-center gap-2 px-5 py-3 bg-brand-500 hover:bg-brand-600 rounded-xl transition-colors">
+        <i data-lucide="plus" class="w-5 h-5"></i>
+        Create Quiz
+      </a>
+    </div>
+
+    <!-- Filters & Search -->
+    <div class="flex flex-wrap gap-4 mb-6">
+      <div class="flex-1 min-w-[300px]">
+        <div class="relative">
+          <i data-lucide="search" class="w-5 h-5 text-zinc-500 absolute left-4 top-1/2 -translate-y-1/2"></i>
+          <input type="text" id="searchInput"
+            class="w-full pl-12 pr-4 py-3 bg-zinc-900 border border-zinc-800 rounded-xl focus:border-brand-500 outline-none transition-colors"
+            placeholder="Search quizzes..." />
+        </div>
+      </div>
+      <select id="statusFilter"
+        class="px-4 py-3 bg-zinc-900 border border-zinc-800 rounded-xl focus:border-brand-500 outline-none transition-colors"
+        title="Filter by status">
+        <option value="all">All Status</option>
+        <option value="published">Published</option>
+        <option value="draft">Draft</option>
+      </select>
+      <select id="categoryFilter"
+        class="px-4 py-3 bg-zinc-900 border border-zinc-800 rounded-xl focus:border-brand-500 outline-none transition-colors"
+        title="Filter by category">
+        <option value="all">All Categories</option>
+        <option value="mathematics">Mathematics</option>
+        <option value="science">Science</option>
+        <option value="english">English</option>
+        <option value="general-knowledge">General Knowledge</option>
+      </select>
+    </div>
+
+    <!-- Stats Summary -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 flex items-center gap-4">
+        <div class="w-10 h-10 bg-brand-500/10 rounded-lg flex items-center justify-center">
+          <i data-lucide="file-question" class="w-5 h-5 text-brand-400"></i>
+        </div>
+        <div>
+          <p class="text-2xl font-bold">12</p>
+          <p class="text-sm text-zinc-500">Total Quizzes</p>
+        </div>
+      </div>
+      <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 flex items-center gap-4">
+        <div class="w-10 h-10 bg-green-500/10 rounded-lg flex items-center justify-center">
+          <i data-lucide="check-circle" class="w-5 h-5 text-green-400"></i>
+        </div>
+        <div>
+          <p class="text-2xl font-bold">8</p>
+          <p class="text-sm text-zinc-500">Published</p>
+        </div>
+      </div>
+      <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 flex items-center gap-4">
+        <div class="w-10 h-10 bg-amber-500/10 rounded-lg flex items-center justify-center">
+          <i data-lucide="file-edit" class="w-5 h-5 text-amber-400"></i>
+        </div>
+        <div>
+          <p class="text-2xl font-bold">4</p>
+          <p class="text-sm text-zinc-500">Drafts</p>
+        </div>
+      </div>
+      <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 flex items-center gap-4">
+        <div class="w-10 h-10 bg-purple-500/10 rounded-lg flex items-center justify-center">
+          <i data-lucide="users" class="w-5 h-5 text-purple-400"></i>
+        </div>
+        <div>
+          <p class="text-2xl font-bold">234</p>
+          <p class="text-sm text-zinc-500">Total Attempts</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quizzes Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="quizzesGrid">
+      <!-- Quiz Card 1 -->
+      <div
+        class="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-700 transition-colors">
+        <div class="p-6">
+          <div class="flex items-start justify-between mb-4">
+            <div class="w-12 h-12 bg-brand-500/20 rounded-xl flex items-center justify-center">
+              <i data-lucide="calculator" class="w-6 h-6 text-brand-400"></i>
+            </div>
+            <span class="px-2 py-1 bg-green-500/10 text-green-400 text-xs font-medium rounded-full">Published</span>
+          </div>
+          <h3 class="text-lg font-semibold mb-2">Mathematics - Chapter 5</h3>
+          <p class="text-zinc-500 text-sm mb-4 line-clamp-2">
+            Algebraic expressions and equations quiz covering basic to
+            intermediate concepts.
+          </p>
+          <div class="flex items-center gap-4 text-sm text-zinc-500">
+            <span class="flex items-center gap-1">
+              <i data-lucide="help-circle" class="w-4 h-4"></i>
+              15 questions
+            </span>
+            <span class="flex items-center gap-1">
+              <i data-lucide="clock" class="w-4 h-4"></i>
+              30 min
+            </span>
+          </div>
+        </div>
+        <div class="border-t border-zinc-800 px-6 py-4 flex items-center justify-between">
+          <span class="text-sm text-zinc-500">45 attempts</span>
+          <div class="flex items-center gap-2">
+            <button class="p-2 hover:bg-zinc-800 rounded-lg transition-colors" title="View Results">
+              <i data-lucide="bar-chart-3" class="w-4 h-4 text-zinc-400"></i>
+            </button>
+            <button class="p-2 hover:bg-zinc-800 rounded-lg transition-colors" title="Edit Quiz">
+              <i data-lucide="edit" class="w-4 h-4 text-zinc-400"></i>
+            </button>
+            <button class="p-2 hover:bg-zinc-800 rounded-lg transition-colors" title="Share Quiz">
+              <i data-lucide="share-2" class="w-4 h-4 text-zinc-400"></i>
+            </button>
+            <button class="p-2 hover:bg-zinc-800 rounded-lg transition-colors text-red-400" title="Delete">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quiz Card 2 -->
+      <div
+        class="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-700 transition-colors">
+        <div class="p-6">
+          <div class="flex items-start justify-between mb-4">
+            <div class="w-12 h-12 bg-purple-500/20 rounded-xl flex items-center justify-center">
+              <i data-lucide="flask-conical" class="w-6 h-6 text-purple-400"></i>
+            </div>
+            <span class="px-2 py-1 bg-green-500/10 text-green-400 text-xs font-medium rounded-full">Published</span>
+          </div>
+          <h3 class="text-lg font-semibold mb-2">Science - Biology Basics</h3>
+          <p class="text-zinc-500 text-sm mb-4 line-clamp-2">
+            Cell structure, functions, and basic biology concepts for
+            beginners.
+          </p>
+          <div class="flex items-center gap-4 text-sm text-zinc-500">
+            <span class="flex items-center gap-1">
+              <i data-lucide="help-circle" class="w-4 h-4"></i>
+              20 questions
+            </span>
+            <span class="flex items-center gap-1">
+              <i data-lucide="clock" class="w-4 h-4"></i>
+              25 min
+            </span>
+          </div>
+        </div>
+        <div class="border-t border-zinc-800 px-6 py-4 flex items-center justify-between">
+          <span class="text-sm text-zinc-500">78 attempts</span>
+          <div class="flex items-center gap-2">
+            <button class="p-2 hover:bg-zinc-800 rounded-lg transition-colors" title="View Results">
+              <i data-lucide="bar-chart-3" class="w-4 h-4 text-zinc-400"></i>
+            </button>
+            <button class="p-2 hover:bg-zinc-800 rounded-lg transition-colors" title="Edit Quiz">
+              <i data-lucide="edit" class="w-4 h-4 text-zinc-400"></i>
+            </button>
+            <button class="p-2 hover:bg-zinc-800 rounded-lg transition-colors" title="Share Quiz">
+              <i data-lucide="share-2" class="w-4 h-4 text-zinc-400"></i>
+            </button>
+            <button class="p-2 hover:bg-zinc-800 rounded-lg transition-colors text-red-400" title="Delete">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quiz Card 3 -->
+      <div
+        class="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-700 transition-colors">
+        <div class="p-6">
+          <div class="flex items-start justify-between mb-4">
+            <div class="w-12 h-12 bg-amber-500/20 rounded-xl flex items-center justify-center">
+              <i data-lucide="globe" class="w-6 h-6 text-amber-400"></i>
+            </div>
+            <span class="px-2 py-1 bg-zinc-700 text-zinc-400 text-xs font-medium rounded-full">Draft</span>
+          </div>
+          <h3 class="text-lg font-semibold mb-2">General Knowledge Quiz</h3>
+          <p class="text-zinc-500 text-sm mb-4 line-clamp-2">
+            World geography, current affairs, and general awareness test.
+          </p>
+          <div class="flex items-center gap-4 text-sm text-zinc-500">
+            <span class="flex items-center gap-1">
+              <i data-lucide="help-circle" class="w-4 h-4"></i>
+              25 questions
+            </span>
+            <span class="flex items-center gap-1">
+              <i data-lucide="clock" class="w-4 h-4"></i>
+              40 min
+            </span>
+          </div>
+        </div>
+        <div class="border-t border-zinc-800 px-6 py-4 flex items-center justify-between">
+          <span class="text-sm text-zinc-500">Draft</span>
+          <div class="flex items-center gap-2">
+            <button class="p-2 hover:bg-zinc-800 rounded-lg transition-colors" title="Edit Quiz">
+              <i data-lucide="edit" class="w-4 h-4 text-zinc-400"></i>
+            </button>
+            <button class="p-2 hover:bg-zinc-800 rounded-lg transition-colors text-green-400" title="Publish">
+              <i data-lucide="send" class="w-4 h-4"></i>
+            </button>
+            <button class="p-2 hover:bg-zinc-800 rounded-lg transition-colors text-red-400" title="Delete">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quiz Card 4 -->
+      <div
+        class="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-700 transition-colors">
+        <div class="p-6">
+          <div class="flex items-start justify-between mb-4">
+            <div class="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center">
+              <i data-lucide="book-open" class="w-6 h-6 text-green-400"></i>
+            </div>
+            <span class="px-2 py-1 bg-green-500/10 text-green-400 text-xs font-medium rounded-full">Published</span>
+          </div>
+          <h3 class="text-lg font-semibold mb-2">English Grammar Test</h3>
+          <p class="text-zinc-500 text-sm mb-4 line-clamp-2">
+            Grammar rules, sentence structure, and vocabulary assessment.
+          </p>
+          <div class="flex items-center gap-4 text-sm text-zinc-500">
+            <span class="flex items-center gap-1">
+              <i data-lucide="help-circle" class="w-4 h-4"></i>
+              30 questions
+            </span>
+            <span class="flex items-center gap-1">
+              <i data-lucide="clock" class="w-4 h-4"></i>
+              45 min
+            </span>
+          </div>
+        </div>
+        <div class="border-t border-zinc-800 px-6 py-4 flex items-center justify-between">
+          <span class="text-sm text-zinc-500">62 attempts</span>
+          <div class="flex items-center gap-2">
+            <button class="p-2 hover:bg-zinc-800 rounded-lg transition-colors" title="View Results">
+              <i data-lucide="bar-chart-3" class="w-4 h-4 text-zinc-400"></i>
+            </button>
+            <button class="p-2 hover:bg-zinc-800 rounded-lg transition-colors" title="Edit Quiz">
+              <i data-lucide="edit" class="w-4 h-4 text-zinc-400"></i>
+            </button>
+            <button class="p-2 hover:bg-zinc-800 rounded-lg transition-colors" title="Share Quiz">
+              <i data-lucide="share-2" class="w-4 h-4 text-zinc-400"></i>
+            </button>
+            <button class="p-2 hover:bg-zinc-800 rounded-lg transition-colors text-red-400" title="Delete">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quiz Card 5 -->
+      <div
+        class="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-700 transition-colors">
+        <div class="p-6">
+          <div class="flex items-start justify-between mb-4">
+            <div class="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center">
+              <i data-lucide="code" class="w-6 h-6 text-blue-400"></i>
+            </div>
+            <span class="px-2 py-1 bg-zinc-700 text-zinc-400 text-xs font-medium rounded-full">Draft</span>
+          </div>
+          <h3 class="text-lg font-semibold mb-2">Programming Basics</h3>
+          <p class="text-zinc-500 text-sm mb-4 line-clamp-2">
+            Introduction to programming concepts, logic, and problem-solving.
+          </p>
+          <div class="flex items-center gap-4 text-sm text-zinc-500">
+            <span class="flex items-center gap-1">
+              <i data-lucide="help-circle" class="w-4 h-4"></i>
+              10 questions
+            </span>
+            <span class="flex items-center gap-1">
+              <i data-lucide="clock" class="w-4 h-4"></i>
+              20 min
+            </span>
+          </div>
+        </div>
+        <div class="border-t border-zinc-800 px-6 py-4 flex items-center justify-between">
+          <span class="text-sm text-zinc-500">Draft</span>
+          <div class="flex items-center gap-2">
+            <button class="p-2 hover:bg-zinc-800 rounded-lg transition-colors" title="Edit Quiz">
+              <i data-lucide="edit" class="w-4 h-4 text-zinc-400"></i>
+            </button>
+            <button class="p-2 hover:bg-zinc-800 rounded-lg transition-colors text-green-400" title="Publish">
+              <i data-lucide="send" class="w-4 h-4"></i>
+            </button>
+            <button class="p-2 hover:bg-zinc-800 rounded-lg transition-colors text-red-400" title="Delete">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quiz Card 6 -->
+      <div
+        class="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-700 transition-colors">
+        <div class="p-6">
+          <div class="flex items-start justify-between mb-4">
+            <div class="w-12 h-12 bg-red-500/20 rounded-xl flex items-center justify-center">
+              <i data-lucide="landmark" class="w-6 h-6 text-red-400"></i>
+            </div>
+            <span class="px-2 py-1 bg-green-500/10 text-green-400 text-xs font-medium rounded-full">Published</span>
+          </div>
+          <h3 class="text-lg font-semibold mb-2">History - World War II</h3>
+          <p class="text-zinc-500 text-sm mb-4 line-clamp-2">
+            Comprehensive quiz on World War II events, leaders, and impact.
+          </p>
+          <div class="flex items-center gap-4 text-sm text-zinc-500">
+            <span class="flex items-center gap-1">
+              <i data-lucide="help-circle" class="w-4 h-4"></i>
+              18 questions
+            </span>
+            <span class="flex items-center gap-1">
+              <i data-lucide="clock" class="w-4 h-4"></i>
+              35 min
+            </span>
+          </div>
+        </div>
+        <div class="border-t border-zinc-800 px-6 py-4 flex items-center justify-between">
+          <span class="text-sm text-zinc-500">49 attempts</span>
+          <div class="flex items-center gap-2">
+            <button class="p-2 hover:bg-zinc-800 rounded-lg transition-colors" title="View Results">
+              <i data-lucide="bar-chart-3" class="w-4 h-4 text-zinc-400"></i>
+            </button>
+            <button class="p-2 hover:bg-zinc-800 rounded-lg transition-colors" title="Edit Quiz">
+              <i data-lucide="edit" class="w-4 h-4 text-zinc-400"></i>
+            </button>
+            <button class="p-2 hover:bg-zinc-800 rounded-lg transition-colors" title="Share Quiz">
+              <i data-lucide="share-2" class="w-4 h-4 text-zinc-400"></i>
+            </button>
+            <button class="p-2 hover:bg-zinc-800 rounded-lg transition-colors text-red-400" title="Delete">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Auth Utilities -->
+  <script src="/js/auth.js"></script>
+  <script src="/js/mobile-nav.js"></script>
+
+  <!-- Initialize Lucide Icons -->
+  <script>
+    lucide.createIcons();
+
+    // Initialize page
+    let currentUser = null;
+
+    async function initPage() {
+      currentUser = await initAuth();
+      if (currentUser) {
+        await loadQuizzes();
+      }
+    }
+
+    // Fetch and display quizzes
+    async function loadQuizzes() {
+      const quizzesGrid = document.getElementById("quizzesGrid");
+
+      try {
+        const response = await authFetch(
+          `/api/quizzes?teacher=${currentUser.id}`,
+        );
+        const data = await response.json();
+
+        if (!response.ok) throw new Error(data.error);
+
+        const quizzes = data.quizzes || [];
+
+        // Update Stats Summary
+        const total = quizzes.length;
+        const published = quizzes.filter((q) => q.isPublished).length;
+        const drafts = total - published;
+        const attempts = quizzes.reduce(
+          (sum, q) => sum + (q.attemptCount || 0),
+          0,
+        );
+
+        const statsContainers = document.querySelectorAll(
+          ".grid.grid-cols-1.md\\:grid-cols-4 .text-2xl.font-bold",
+        );
+        if (statsContainers.length >= 4) {
+          statsContainers[0].textContent = total;
+          statsContainers[1].textContent = published;
+          statsContainers[2].textContent = drafts;
+          statsContainers[3].textContent = attempts;
+        }
+
+        if (quizzes.length === 0) {
+          quizzesGrid.innerHTML = `
+              <div class="col-span-full text-center py-20 bg-zinc-900/50 border border-zinc-800 border-dashed rounded-3xl">
+                <div class="w-20 h-20 bg-brand-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <i data-lucide="file-question" class="w-10 h-10 text-brand-400"></i>
+                </div>
+                <h2 class="text-2xl font-bold mb-2">No quizzes found</h2>
+                <p class="text-zinc-500 mb-8">You haven't created any quizzes yet. Start by creating your first one!</p>
+                <a href="/create-quiz.html" class="inline-flex items-center gap-2 px-6 py-3 bg-brand-500 hover:bg-brand-600 rounded-xl transition-colors font-medium">
+                  <i data-lucide="plus" class="w-5 h-5"></i>
+                  Create First Quiz
+                </a>
+              </div>
+            `;
+          lucide.createIcons();
+          return;
+        }
+
+        renderQuizzes(quizzes);
+
+        // Store for filtering
+        window.allQuizzes = quizzes;
+      } catch (error) {
+        console.error("Load quizzes error:", error);
+        quizzesGrid.innerHTML = `<div class="col-span-full text-center py-10 text-red-500">Error loading quizzes: ${error.message}</div>`;
+      }
+    }
+
+    function renderQuizzes(quizzes) {
+      const quizzesGrid = document.getElementById("quizzesGrid");
+      quizzesGrid.innerHTML = quizzes
+        .map(
+          (quiz) => `
+          <div class="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-700 transition-all hover:shadow-2xl group" data-id="${quiz._id}">
+            <div class="p-6">
+              <div class="flex items-start justify-between mb-4">
+                <div class="w-12 h-12 bg-brand-500/20 rounded-xl flex items-center justify-center">
+                  <i data-lucide="${quiz.category?.icon || "book-open"}" class="w-6 h-6 text-brand-400"></i>
+                </div>
+                <span class="px-2 py-1 ${quiz.isPublished ? "bg-green-500/10 text-green-400" : "bg-zinc-700 text-zinc-400"} text-xs font-medium rounded-full">
+                  ${quiz.isPublished ? "Published" : "Draft"}
+                </span>
+              </div>
+              <h3 class="text-lg font-semibold mb-2 group-hover:text-brand-400 transition-colors">${quiz.title}</h3>
+              <p class="text-zinc-500 text-sm mb-4 line-clamp-2">${quiz.description || "No description provided."}</p>
+              <div class="flex items-center gap-4 text-sm text-zinc-500">
+                <span class="flex items-center gap-1">
+                  <i data-lucide="help-circle" class="w-4 h-4"></i>
+                  ${quiz.questionCount || 0} questions
+                </span>
+                <span class="flex items-center gap-1">
+                  <i data-lucide="clock" class="w-4 h-4"></i>
+                  ${quiz.timeLimit || 0} min
+                </span>
+              </div>
+            </div>
+            <div class="border-t border-zinc-800 px-6 py-4 flex items-center justify-between bg-zinc-900/50">
+              <span class="text-sm text-zinc-500">${quiz.attemptCount || 0} attempts</span>
+              <div class="flex items-center gap-2">
+                <button class="p-2 hover:bg-zinc-800 rounded-lg transition-colors" title="View Results" onclick="viewResults('${quiz._id}')">
+                  <i data-lucide="bar-chart-3" class="w-4 h-4 text-zinc-400"></i>
+                </button>
+                <button class="p-2 hover:bg-zinc-800 rounded-lg transition-colors" title="Edit Quiz" onclick="editQuiz('${quiz._id}')">
+                  <i data-lucide="edit" class="w-4 h-4 text-zinc-400"></i>
+                </button>
+                <button class="p-2 hover:bg-zinc-800 rounded-lg transition-colors" title="Share Quiz" onclick="shareQuizFunc('${quiz._id}')">
+                  <i data-lucide="share-2" class="w-4 h-4 text-zinc-400"></i>
+                </button>
+                <button class="p-2 hover:bg-zinc-800 rounded-lg transition-colors text-red-400" onclick="deleteQuiz('${quiz._id}')" title="Delete">
+                  <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        `,
+        )
+        .join("");
+      lucide.createIcons();
+    }
+
+    // View Results
+    window.viewResults = function (id) {
+      window.location.href = `/quiz-results.html?id=${id}`;
+    };
+
+    // Edit Quiz
+    window.editQuiz = function (id) {
+      window.location.href = `/create-quiz.html?id=${id}`;
+    };
+
+    // Share Quiz Function
+    window.shareQuizFunc = async function (id) {
+      try {
+        const response = await authFetch(`/api/quizzes/${id}`);
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Failed to load quiz");
+        }
+
+        const quiz = data.quiz;
+        window.shareQuiz(quiz.accessCode, quiz.title, quiz.joinLink);
+      } catch (error) {
+        alert(error.message);
+      }
+    };
+
+    // Delete Quiz
+    window.deleteQuiz = async function (id) {
+      if (
+        !confirm(
+          "Are you sure you want to delete this quiz? This action cannot be undone.",
+        )
+      )
+        return;
+
+      try {
+        const response = await authFetch(`/api/quizzes/${id}`, {
+          method: "DELETE",
+        });
+
+        if (!response.ok) {
+          const data = await response.json();
+          throw new Error(data.error || "Failed to delete quiz");
+        }
+
+        loadQuizzes();
+      } catch (error) {
+        alert(error.message);
+      }
+    };
+
+    // Search and Filter functionality
+    const searchInput = document.getElementById("searchInput");
+    const statusFilter = document.getElementById("statusFilter");
+    const categoryFilter = document.getElementById("categoryFilter");
+
+    function applyFilters() {
+      const query = searchInput.value.toLowerCase();
+      const status = statusFilter.value;
+      const category = categoryFilter.value;
+
+      const filtered = window.allQuizzes.filter((quiz) => {
+        const matchesSearch = quiz.title.toLowerCase().includes(query);
+        const matchesStatus =
+          status === "all" ||
+          (status === "published" ? quiz.isPublished : !quiz.isPublished);
+        const matchesCategory =
+          category === "all" ||
+          quiz.category?.name?.toLowerCase() === category;
+        return matchesSearch && matchesStatus && matchesCategory;
+      });
+
+      renderQuizzes(filtered);
+    }
+
+    // Share Quiz Modal
+    window.shareQuiz = function (code, title, link) {
+      if (!code) return;
+
+      // Remove existing modal if any
+      const existingModal = document.getElementById("shareModal");
+      if (existingModal) existingModal.remove();
+
+      const modal = document.createElement("div");
+      modal.id = "shareModal";
+      modal.className =
+        "fixed inset-0 z-50 flex items-center justify-center px-4";
+      modal.innerHTML = `
+          <div class="fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity" onclick="this.parentElement.remove()"></div>
+          <div class="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-md p-6 relative z-10 shadow-2xl transform transition-all scale-100">
+            <button onclick="this.closest('#shareModal').remove()" class="absolute top-4 right-4 text-zinc-500 hover:text-white">
+              <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            
+            <div class="text-center mb-6">
+              <div class="w-12 h-12 bg-brand-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="share-2" class="w-6 h-6 text-brand-500"></i>
+              </div>
+              <h2 class="text-xl font-bold mb-1">Share Quiz</h2>
+              <p class="text-zinc-400 text-sm line-clamp-1">${title}</p>
+            </div>
+
+            <div class="space-y-4 mb-6">
+              <div class="bg-zinc-800/50 rounded-xl p-4 border border-zinc-700">
+                <label class="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2">Access Code</label>
+                <div class="flex items-center gap-2">
+                  <code class="flex-1 text-2xl font-mono font-bold text-center tracking-widest text-brand-400">${code}</code>
+                  <button onclick="navigator.clipboard.writeText('${code}'); this.innerHTML='<i data-lucide=\\'check\\' class=\\'w-5 h-5 text-green-500\\'></i>'; setTimeout(() => this.innerHTML='<i data-lucide=\\'copy\\' class=\\'w-5 h-5\\'></i>', 2000); lucide.createIcons();" class="p-2 hover:bg-zinc-700 rounded-lg text-zinc-400 hover:text-white transition-colors" title="Copy Code">
+                    <i data-lucide="copy" class="w-5 h-5"></i>
+                  </button>
+                </div>
+              </div>
+
+              ${link
+          ? `
+              <div class="bg-zinc-800/50 rounded-xl p-4 border border-zinc-700">
+                <label class="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2">Join Link</label>
+                <div class="flex items-center gap-2">
+                  <input type="text" value="${link}" readonly class="flex-1 bg-transparent text-sm text-zinc-300 outline-none w-full" />
+                  <button onclick="navigator.clipboard.writeText('${link}'); this.innerHTML='<i data-lucide=\\'check\\' class=\\'w-5 h-5 text-green-500\\'></i>'; setTimeout(() => this.innerHTML='<i data-lucide=\\'link\\' class=\\'w-5 h-5\\'></i>', 2000); lucide.createIcons();" class="p-2 hover:bg-zinc-700 rounded-lg text-zinc-400 hover:text-white transition-colors" title="Copy Link">
+                    <i data-lucide="link" class="w-5 h-5"></i>
+                  </button>
+                </div>
+              </div>
+              `
+          : ""
+        }
+            </div>
+
+            <div class="text-center">
+               <p class="text-xs text-zinc-500">Students can join at <a href="/join-quiz.html" class="text-brand-400 hover:underline">quizcraft.com/join</a></p>
+            </div>
+          </div>
+        `;
+      document.body.appendChild(modal);
+      lucide.createIcons();
+    };
+
+    searchInput.addEventListener("input", applyFilters);
+    statusFilter.addEventListener("change", applyFilters);
+    categoryFilter.addEventListener("change", applyFilters);
+
+    // Initialize
+    initPage();
+  </script>
+</body>
+
+</html>
