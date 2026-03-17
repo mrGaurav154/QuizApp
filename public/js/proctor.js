@@ -1,6 +1,13 @@
 /**
  * proctor.js
- * Handles webcam AI analysis using face-api.js for the Quiz Anti-Cheat System
+ * Handles webcam AI analysis using face-api.js (justadudewhohacks v0.22.2)
+ * for the Quiz Anti-Cheat System.
+ *
+ * Key fixes:
+ *  1. CDN switched to face-api.js@0.22.2 to match /models format
+ *  2. Uses video.videoWidth/videoHeight (not video.width/height which are 0 for CSS-sized elements)
+ *  3. Waits for faceapi to be loaded (defer script) before using it
+ *  4. All active checks use window.isQuizActive (live value from quiz-taking.js)
  */
 
 const video = document.getElementById('webcamVideo');
@@ -15,211 +22,278 @@ let detectionInterval = null;
 let noFaceFrames = 0;
 let multipleFacesFrames = 0;
 
-// Thresholds for triggering warnings (how many consecutive frames of violation before a warning)
-const NO_FACE_THRESHOLD = 30; // ~3 seconds at 10fps
-const MULTIPLE_FACES_THRESHOLD = 20; // ~2 seconds at 10fps
+// How many consecutive bad frames before a warning is triggered
+const NO_FACE_THRESHOLD = 30;        // ~3 sec at 10fps
+const MULTIPLE_FACES_THRESHOLD = 20; // ~2 sec at 10fps
+
+// ============================================================================
+// WAIT FOR face-api.js TO LOAD (it is loaded with 'defer')
+// ============================================================================
+
+function waitForFaceApi(callback) {
+    if (typeof faceapi !== 'undefined') {
+        callback();
+    } else {
+        // Check every 100ms until faceapi is available
+        const check = setInterval(() => {
+            if (typeof faceapi !== 'undefined') {
+                clearInterval(check);
+                callback();
+            }
+        }, 100);
+    }
+}
 
 // ============================================================================
 // EARLY CAMERA PERMISSION REQUEST
 // ============================================================================
 
-/**
- * initCameraEarly: Called as soon as the start screen loads.
- * This requests camera access immediately so the browser can 'remember' it.
- * The actual face-detection only starts after startQuiz() is called.
- */
 async function initCameraEarly() {
+    proctorStatus.classList.remove('hidden');
+    proctorStatus.classList.add('flex');
+    proctorText.textContent = 'Requesting Camera...';
+    proctorDot.className = 'w-2 h-2 rounded-full bg-amber-500 animate-pulse';
+
+    const camStatus = document.getElementById('cameraStatusBadge');
+
     try {
-        proctorStatus.classList.remove('hidden');
-        proctorStatus.classList.add('flex');
-        proctorText.textContent = 'Requesting Camera...';
-        proctorDot.className = 'w-2 h-2 rounded-full bg-amber-500 animate-pulse';
+        // Request camera with ideal resolution for better face detection
+        const stream = await navigator.mediaDevices.getUserMedia({
+            video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: 'user' }
+        });
 
-        // Request camera access to allow browser to remember permission
-        const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
-
-        // Store stream reference so we reuse it when the quiz starts
         window._proctoringStream = stream;
-
-        // Show the webcam feed immediately on the start screen
         video.srcObject = stream;
         webcamContainer.classList.remove('hidden');
 
         proctorText.textContent = 'Camera Ready';
         proctorDot.className = 'w-2 h-2 rounded-full bg-green-500 animate-pulse';
 
-        // Update the camera status badge on the start screen if it exists
-        const camStatus = document.getElementById('cameraStatusBadge');
         if (camStatus) {
             camStatus.innerHTML = `<span class="w-2 h-2 rounded-full bg-green-500"></span><span class="text-green-400">Camera Active – Proctoring Enabled</span>`;
         }
     } catch (err) {
-        console.error("Early camera init failed:", err);
+        console.error('Camera init failed:', err);
         proctorText.textContent = 'Camera Denied';
         proctorDot.className = 'w-2 h-2 rounded-full bg-red-500';
 
-        const camStatus = document.getElementById('cameraStatusBadge');
         if (camStatus) {
-            camStatus.innerHTML = `<span class="w-2 h-2 rounded-full bg-red-500"></span><span class="text-red-400">Camera Denied – Proctoring Required. Please allow camera access and refresh.</span>`;
+            camStatus.innerHTML = `<span class="w-2 h-2 rounded-full bg-red-500"></span><span class="text-red-400">Camera Denied – Please allow access and refresh.</span>`;
         }
     }
 }
 
-// Load AI Models (called when Start is clicked)
+// ============================================================================
+// LOAD MODELS AND START DETECTION (called when "Start Quiz" is clicked)
+// ============================================================================
+
 async function loadModels() {
-    try {
-        proctorText.textContent = 'Loading AI...';
-        proctorDot.className = 'w-2 h-2 rounded-full bg-amber-500 animate-pulse';
-        
-        // We only need the tiny face detector for performance
-        await faceapi.nets.tinyFaceDetector.loadFromUri('/models');
+    proctorStatus.classList.remove('hidden');
+    proctorStatus.classList.add('flex');
+    proctorText.textContent = 'Loading AI...';
+    proctorDot.className = 'w-2 h-2 rounded-full bg-amber-500 animate-pulse';
 
-        // If camera was already started early, reuse the stream
-        if (window._proctoringStream && video.srcObject) {
-            // Already streaming — just start detection
-            const displaySize = { width: video.width, height: video.height };
-            faceapi.matchDimensions(canvas, displaySize);
-            isProctoringActive = true;
-            startDetection(displaySize);
-            startBackgroundProctoring();
-            enforceFullScreen();
-        } else {
-            startVideo();
+    // Wait for face-api.js to finish loading (it uses 'defer')
+    waitForFaceApi(async () => {
+        try {
+            await faceapi.nets.tinyFaceDetector.loadFromUri('/models');
+            console.log('✅ face-api model loaded successfully');
+
+            proctorText.textContent = 'Proctor Active';
+            proctorDot.className = 'w-2 h-2 rounded-full bg-green-500 animate-pulse';
+
+            if (window._proctoringStream && video.srcObject) {
+                // Camera already running — start detection directly
+                isProctoringActive = true;
+                webcamContainer.classList.remove('hidden');
+                waitForVideoThenDetect();
+            } else {
+                openCamera();
+            }
+        } catch (err) {
+            console.error('Failed to load face-api model:', err);
+            proctorText.textContent = 'AI Load Failed';
+            proctorDot.className = 'w-2 h-2 rounded-full bg-red-500';
         }
-    } catch (err) {
-        console.error("Failed to load AI models:", err);
-        proctorText.textContent = 'AI Failed to Load';
-        proctorDot.className = 'w-2 h-2 rounded-full bg-red-500';
-    }
+    });
 }
 
-// Start Webcam (if not already started by initCameraEarly)
-function startVideo() {
-    const useExistingStream = window._proctoringStream;
-    const streamPromise = useExistingStream
-        ? Promise.resolve(useExistingStream)
-        : navigator.mediaDevices.getUserMedia({ video: {} });
+// ============================================================================
+// CAMERA STARTUP (fallback if early init didn't run)
+// ============================================================================
+
+function openCamera() {
+    const streamPromise = window._proctoringStream
+        ? Promise.resolve(window._proctoringStream)
+        : navigator.mediaDevices.getUserMedia({
+            video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: 'user' }
+          });
 
     streamPromise
         .then(stream => {
             video.srcObject = stream;
+            window._proctoringStream = stream;
             webcamContainer.classList.remove('hidden');
-            
-            proctorText.textContent = 'Proctor Active';
-            proctorDot.className = 'w-2 h-2 rounded-full bg-green-500 animate-pulse';
-            
-            // Wait for video to start playing before tracking
-            video.addEventListener('playing', () => {
-                const displaySize = { width: video.width, height: video.height };
-                faceapi.matchDimensions(canvas, displaySize);
-                
-                isProctoringActive = true;
-                startDetection(displaySize);
-                startBackgroundProctoring();
-                enforceFullScreen();
-            }, { once: true });
+            isProctoringActive = true;
+            waitForVideoThenDetect();
         })
         .catch(err => {
-            console.error("Webcam access denied or unavailable:", err);
+            console.error('Camera access denied:', err);
             proctorText.textContent = 'Camera Denied';
             proctorDot.className = 'w-2 h-2 rounded-full bg-red-500';
-            
-            // If they deny camera, trigger an immediate warning
-            if (typeof triggerWarning === 'function') {
-                triggerWarning("Camera Required", "You must allow camera access to take this proctored quiz.");
+            if (typeof window.triggerWarning === 'function') {
+                window.triggerWarning('Camera Required', 'You must allow camera access to take this proctored quiz.');
             }
         });
 }
 
-// Start analyzing frames
-function startDetection(displaySize) {
-    // Run detection every 100ms (10fps is plenty for this and saves CPU)
-    detectionInterval = setInterval(async () => {
-        if (!isProctoringActive || !isQuizActive) return;
+// ============================================================================
+// WAIT FOR VIDEO TO BE READY (video.videoWidth must be > 0)
+// ============================================================================
 
-        // Detect all faces
-        const detections = await faceapi.detectAllFaces(
-            video, 
-            new faceapi.TinyFaceDetectorOptions({ inputSize: 160, scoreThreshold: 0.4 })
-        );
-        
-        const resizedDetections = faceapi.resizeResults(detections, displaySize);
-        
-        // Draw boxes on canvas for visual feedback
-        canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
-        faceapi.draw.drawDetections(canvas, resizedDetections);
-
-        analyzeDetections(detections.length);
-        
-    }, 100);
-}
-
-// Analyze the number of faces and trigger warnings if necessary
-function analyzeDetections(faceCount) {
-    if (faceCount === 0) {
-        noFaceFrames++;
-        multipleFacesFrames = 0; // reset
-        
-        proctorContainerAlert('border-amber-500');
-        
-        if (noFaceFrames >= NO_FACE_THRESHOLD) {
-            noFaceFrames = 0; // Reset after triggering
-            if (typeof triggerWarning === 'function') {
-                triggerWarning("Face Not Detected", "Please ensure your face is clearly visible to the camera at all times.");
-            }
+/**
+ * CSS-sized video elements return video.width = 0 and video.height = 0.
+ * We must use video.videoWidth / video.videoHeight (actual stream resolution).
+ * These are only available once the stream metadata has loaded.
+ */
+function waitForVideoThenDetect() {
+    function tryStart() {
+        if (video.videoWidth > 0 && video.videoHeight > 0) {
+            startFaceDetection();
+        } else {
+            // Not ready yet — wait a bit and retry
+            setTimeout(tryStart, 200);
         }
-    } else if (faceCount > 1) {
-        multipleFacesFrames++;
-        noFaceFrames = 0; // reset
-        
-        proctorContainerAlert('border-red-500');
-        
-        if (multipleFacesFrames >= MULTIPLE_FACES_THRESHOLD) {
-            multipleFacesFrames = 0; // Reset after triggering
-            if (typeof triggerWarning === 'function') {
-                triggerWarning("Multiple People Detected", "Only the registered student is allowed in the camera frame.");
-            }
-        }
+    }
+
+    if (video.readyState >= 2) {
+        tryStart();
     } else {
-        // Exactly 1 face (All good)
-        noFaceFrames = 0;
-        multipleFacesFrames = 0;
-        proctorContainerAlert('border-zinc-800'); // normal border
+        video.addEventListener('loadeddata', tryStart, { once: true });
+        video.addEventListener('playing', tryStart, { once: true });
     }
 }
 
-// Visual effect on the webcam container — only swap the border color, never set 'hidden'
-function proctorContainerAlert(borderColorClass) {
-    webcamContainer.classList.remove('border-zinc-800', 'border-amber-500', 'border-red-500');
-    webcamContainer.classList.add(borderColorClass);
-    webcamContainer.classList.remove('hidden');
+function startFaceDetection() {
+    const W = video.videoWidth;
+    const H = video.videoHeight;
+    const displaySize = { width: W, height: H };
+
+    // Match canvas to actual stream resolution
+    canvas.width = W;
+    canvas.height = H;
+    faceapi.matchDimensions(canvas, displaySize);
+
+    console.log(`🎥 Detection started at ${W}x${H}`);
+
+    // ── Detection loop ──────────────────────────────────────────────────────
+    detectionInterval = setInterval(async () => {
+        // window.isQuizActive is kept in sync by quiz-taking.js
+        if (!isProctoringActive || !window.isQuizActive) return;
+
+        try {
+            const detections = await faceapi.detectAllFaces(
+                video,
+                new faceapi.TinyFaceDetectorOptions({ inputSize: 160, scoreThreshold: 0.4 })
+            );
+
+            // Draw bounding boxes on overlay canvas
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, W, H);
+            const resized = faceapi.resizeResults(detections, displaySize);
+            faceapi.draw.drawDetections(canvas, resized);
+
+            analyzeDetections(detections.length);
+
+        } catch (e) {
+            // Ignore transient errors (e.g. frame grabbed during resize)
+            console.warn('[proctor] frame error:', e.message);
+        }
+
+    }, 100); // 10fps
+
+    // Also start background (tab-switch / phone call) monitoring
+    startBackgroundProctoring();
+    enforceFullScreen();
 }
 
 // ============================================================================
-// BROWSER LOCK (FULL-SCREEN ENFORCEMENT)
+// VIOLATION ANALYSIS — warn if face missing or multiple faces
+// ============================================================================
+
+function analyzeDetections(faceCount) {
+    if (faceCount === 0) {
+        // ── No face detected ──────────────────────────────────
+        noFaceFrames++;
+        multipleFacesFrames = 0;
+        proctorContainerAlert('border-amber-500');
+
+        if (noFaceFrames >= NO_FACE_THRESHOLD) {
+            noFaceFrames = 0;
+            if (typeof window.triggerWarning === 'function') {
+                window.triggerWarning(
+                    '⚠️ Face Not Detected',
+                    'Please ensure your face is clearly visible to the camera at all times.'
+                );
+            }
+        }
+
+    } else if (faceCount > 1) {
+        // ── Multiple faces detected ────────────────────────────
+        multipleFacesFrames++;
+        noFaceFrames = 0;
+        proctorContainerAlert('border-red-500');
+
+        if (multipleFacesFrames >= MULTIPLE_FACES_THRESHOLD) {
+            multipleFacesFrames = 0;
+            if (typeof window.triggerWarning === 'function') {
+                window.triggerWarning(
+                    '🚨 Multiple People Detected',
+                    'Only the registered student is allowed in the camera frame.'
+                );
+            }
+        }
+
+    } else {
+        // ── Exactly 1 face — all good ──────────────────────────
+        noFaceFrames = 0;
+        multipleFacesFrames = 0;
+        proctorContainerAlert('border-green-500');
+    }
+}
+
+// ============================================================================
+// WEBCAM BORDER FEEDBACK (never touches 'hidden')
+// ============================================================================
+
+function proctorContainerAlert(borderColorClass) {
+    webcamContainer.classList.remove(
+        'border-zinc-800', 'border-amber-500', 'border-red-500', 'border-green-500'
+    );
+    webcamContainer.classList.add(borderColorClass);
+    webcamContainer.classList.remove('hidden'); // safety — always keep visible
+}
+
+// ============================================================================
+// FULL-SCREEN ENFORCEMENT
 // ============================================================================
 
 function enforceFullScreen() {
-    // Request full-screen on the document element
     const el = document.documentElement;
     if (el.requestFullscreen) el.requestFullscreen();
     else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
     else if (el.mozRequestFullScreen) el.mozRequestFullScreen();
 
-    let fsWarningCooldown = false;
-
-    // Listen for full-screen exit
+    let cooldown = false;
     document.addEventListener('fullscreenchange', () => {
-        if (!isProctoringActive) return;
-        const isFullscreen = !!document.fullscreenElement;
-        if (!isFullscreen && !fsWarningCooldown) {
-            fsWarningCooldown = true;
-            setTimeout(() => { fsWarningCooldown = false; }, 5000);
-
-            if (typeof triggerWarning === 'function') {
-                triggerWarning(
+        if (!isProctoringActive || !window.isQuizActive) return;
+        if (!document.fullscreenElement && !cooldown) {
+            cooldown = true;
+            setTimeout(() => { cooldown = false; }, 5000);
+            if (typeof window.triggerWarning === 'function') {
+                window.triggerWarning(
                     'Full-Screen Required',
-                    'Exiting full-screen is not allowed during the quiz. Please return to full-screen to continue.'
+                    'Exiting full-screen is not allowed during the quiz.'
                 );
             }
         }
@@ -227,56 +301,45 @@ function enforceFullScreen() {
 }
 
 // ============================================================================
-// MOBILE & TAB-SWITCHING PROCTORING (Visibility API & Time Drift)
+// BACKGROUND PROCTORING — tab switch & phone calls
 // ============================================================================
 
-const TIME_DRIFT_THRESHOLD = 3000; // 3 seconds suspended = warning
+const TIME_DRIFT_THRESHOLD = 3000;
 let lastHeartbeatTime = Date.now();
 let heartbeatInterval = null;
 let visibilityExitTime = 0;
 
 function startBackgroundProctoring() {
-    // 1. Time Drift Detection (Heartbeat) - Catches Mobile Phone Calls / App Suspensions
+    // 1. Heartbeat — detects phone calls / app suspend (mobile)
     lastHeartbeatTime = Date.now();
-    heartbeatInterval = window.setInterval(() => {
-        if (!isProctoringActive || typeof isQuizActive === 'undefined' || !isQuizActive) return;
-
-        const currentTime = Date.now();
-        const timeDiff = currentTime - lastHeartbeatTime;
-
-        // If the interval took more than 3 seconds (instead of 1s), the app was suspended
-        if (timeDiff > TIME_DRIFT_THRESHOLD) {
-            console.warn(`Time drift detected! User likely answered a call or minimized the app. (Diff: ${timeDiff}ms)`);
-            if (typeof triggerWarning === 'function') {
-                triggerWarning("Background Activity Detected", "The quiz was suspended in the background. Please do not leave the app or answer calls during the quiz.");
+    heartbeatInterval = setInterval(() => {
+        if (!isProctoringActive || !window.isQuizActive) return;
+        const now = Date.now();
+        const diff = now - lastHeartbeatTime;
+        if (diff > TIME_DRIFT_THRESHOLD) {
+            if (typeof window.triggerWarning === 'function') {
+                window.triggerWarning(
+                    'Background Activity Detected',
+                    'The quiz was suspended. Do not leave the app or answer calls.'
+                );
             }
         }
-        
-        // Reset the timer for the next heartbeat
-        lastHeartbeatTime = Date.now(); // Recalculate now to avoid compounding drift
+        lastHeartbeatTime = Date.now();
     }, 1000);
 
-    // 2. Page Visibility API - Catches Tab Switching
-    document.addEventListener("visibilitychange", () => {
-        if (!isProctoringActive || typeof isQuizActive === 'undefined' || !isQuizActive) return;
-
+    // 2. Page Visibility API — tab switching
+    document.addEventListener('visibilitychange', () => {
+        if (!isProctoringActive || !window.isQuizActive) return;
         if (document.visibilityState === 'hidden') {
-            // User left the tab
             visibilityExitTime = Date.now();
-            console.warn("Tab hidden! User switched tabs or minimized browser.");
-        } else if (document.visibilityState === 'visible') {
-            // User returned to the tab
-            if (visibilityExitTime > 0) {
-                const timeAway = Date.now() - visibilityExitTime;
-                visibilityExitTime = 0; // reset
-                
-                // If away for more than 1 second, trigger a warning
-                if (timeAway > 1500) {
-                    console.warn(`Tab was hidden for ${timeAway}ms. Triggering warning.`);
-                    if (typeof triggerWarning === 'function') {
-                        triggerWarning("Switched Tabs Detected", "You must remain on the quiz page. Switching tabs is not allowed.");
-                    }
-                }
+        } else if (document.visibilityState === 'visible' && visibilityExitTime > 0) {
+            const away = Date.now() - visibilityExitTime;
+            visibilityExitTime = 0;
+            if (away > 1500 && typeof window.triggerWarning === 'function') {
+                window.triggerWarning(
+                    'Switched Tabs Detected',
+                    'You must remain on the quiz page. Switching tabs is not allowed.'
+                );
             }
         }
     });
