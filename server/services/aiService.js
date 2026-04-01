@@ -54,7 +54,7 @@ const generateQuestions = async ({ title, category, difficulty, count = 5 }) => 
                     content: prompt
                 }
             ],
-            model: "openai/gpt-oss-120b",
+            model: "llama-3.3-70b-versatile",
             temperature: 1,
             max_completion_tokens: 8192,
             top_p: 1,
@@ -62,13 +62,15 @@ const generateQuestions = async ({ title, category, difficulty, count = 5 }) => 
             stop: null
         });
 
-        let content = completion.choices[0]?.message?.content;
+        let content = completion.choices[0]?.message?.content || '';
         
-        // Basic cleanup if the model wrapping it in backticks
-        if (content.startsWith('```json')) {
-            content = content.replace(/^```json/, '').replace(/```$/, '');
-        } else if (content.startsWith('```')) {
-            content = content.replace(/^```/, '').replace(/```$/, '');
+        // Find the JSON array or object in the response
+        const jsonMatch = content.match(/(\[[\s\S]*\]|\{[\s\S]*\})/);
+        if (jsonMatch) {
+            content = jsonMatch[0];
+        } else {
+            // Fallback for cases without clear markers
+            content = content.replace(/^```json/, '').replace(/```$/, '').trim();
         }
 
         const parsedData = JSON.parse(content);
